@@ -1,41 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
-module MusicWithKeys where
+module KeyboardEvents where
 
 import Graphics.UI.GLUT
 import Graphics.Rendering.OpenGL
-
-import Euterpea
 import StateRecorder
-
--- für Interaktion
+import Euterpea
 import Data.IORef
-new = newIORef
 
-main = do
-    (progName, _) <- getArgsAndInitialize
-    initialDisplayMode $= [DoubleBuffered]
-    initialWindowSize $= Size 500 500
-    createAWindow progName
-    mainLoop
-
-createAWindow windowName = do
-    createWindow windowName
-    recorder <- new $ MyRecorder []
-    music <- new c
-    displayCallback $= display
-    keyboardMouseCallback $= Just (keyboard recorder)
-
-display = do
-    clear [ColorBuffer]
-    loadIdentity
-    swapBuffers
-    flush
-
-    -- TODO funktion die buchstabenwerte in notenwert mit readMaybe (PitchClass...)
-    
--- keystroke events
 keyboard recorder (Char 'c') Down _ _ = do
-    play $ c 4 qn
+    play (c 4 qn)
     r <- get recorder
     recorder' <- recordIO r (c 4 qn)
     recorder $= recorder'
@@ -76,11 +49,9 @@ keyboard recorder (Char 'b') Down _ _ = do
     recorder' <- recordIO r (b 4 qn)
     recorder $= recorder'
     postRedisplay Nothing
+-- all notes that have been played until this function is called are played together
 keyboard recorder (Char 'r') Down _ _ = do
     r <- get recorder
     play $ line $ reverse (notes r)
     postRedisplay Nothing
 keyboard _  _ _ _ _ = return ()
-
-
--- UISF midiIn, ...

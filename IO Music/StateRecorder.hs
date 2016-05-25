@@ -1,5 +1,7 @@
 module StateRecorder where
 
+-- TODOs: import state standardbib
+--        
 import Control.Applicative (Applicative(..))
 import Control.Monad       (liftM, ap)
 import Euterpea
@@ -34,8 +36,13 @@ data MyRecorder = MyRecorder { notes :: [Music Pitch] }
 recordNote :: Music Pitch -> State MyRecorder ()
 recordNote someNote = modifyWith noteInList where
     noteInList recorder = recorder { notes = someNote : notes recorder } 
+    -- modifyWith $ modfunciton (nimmt myrecorder notes)
+    -- MyRecorder . ( someNote : ) . notes
+    
     
 recordIO :: MyRecorder -> Music Pitch -> IO MyRecorder
 recordIO recorder note = do
     let (recorder', ()) = runState (recordNote note) recorder
     return recorder'
+    -- standardbib
+    -- fst <$> runState (recordNote note) recorder
