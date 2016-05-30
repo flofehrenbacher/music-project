@@ -1,13 +1,20 @@
 {-# LANGUAGE FlexibleContexts #-}
 module MusicWithKeys where
 
+import Euterpea
+
 import Graphics.UI.GLUT
 import Graphics.Rendering.OpenGL
 
-import Euterpea
+import KeyboardEvents
 import StateRecorder
+import MidiPoll
 
--- für Interaktion
+--MIDI
+import Euterpea.IO.MIDI.GeneralMidi
+import Euterpea.IO.MIDI.MidiIO
+
+import Control.Concurrent.Chan
 import Data.IORef
 new = newIORef
 
@@ -15,72 +22,21 @@ main = do
     (progName, _) <- getArgsAndInitialize
     initialDisplayMode $= [DoubleBuffered]
     initialWindowSize $= Size 500 500
-    createAWindow progName
+    channel <- initMidi
+    createAWindow progName channel
     mainLoop
 
-createAWindow windowName = do
+createAWindow windowName channel = do
     createWindow windowName
     recorder <- new $ MyRecorder []
     music <- new c
-    displayCallback $= display
+    displayCallback $= display channel
     keyboardMouseCallback $= Just (keyboard recorder)
 
-display = do
+display channel = do
     clear [ColorBuffer]
     loadIdentity
+    message <- readChan channel
+    print message
     swapBuffers
     flush
-
-    -- TODO funktion die buchstabenwerte in notenwert mit readMaybe (PitchClass...)
-    
--- keystroke events
-keyboard recorder (Char 'c') Down _ _ = do
-    play $ c 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (c 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'd') Down _ _ = do
-    play $ d 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (d 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'e') Down _ _ = do
-    play $ e 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (e 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'f') Down _ _ = do
-    play $ f 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (f 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'g') Down _ _ = do
-    play $ g 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (g 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'a') Down _ _ = do
-    play $ a 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (a 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'b') Down _ _ = do
-    play $ b 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (b 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'r') Down _ _ = do
-    r <- get recorder
-    play $ line $ reverse (notes r)
-    postRedisplay Nothing
-keyboard _  _ _ _ _ = return ()
-
-
--- UISF midiIn, ...
