@@ -1,57 +1,33 @@
 {-# LANGUAGE FlexibleContexts #-}
 module KeyboardEvents where
 
+import Euterpea
+
+import Data.Char
+import Text.Read
 import Graphics.UI.GLUT
 import Graphics.Rendering.OpenGL
-import StateRecorder
-import Euterpea
-import Data.IORef
 
-keyboard recorder (Char 'c') Down _ _ = do
-    play (c 4 qn)
-    r <- get recorder
-    recorder' <- recordIO r (c 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'd') Down _ _ = do
-    play $ d 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (d 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'e') Down _ _ = do
-    play $ e 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (e 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'f') Down _ _ = do
-    play $ f 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (f 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'g') Down _ _ = do
-    play $ g 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (g 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'a') Down _ _ = do
-    play $ a 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (a 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
-keyboard recorder (Char 'b') Down _ _ = do
-    play $ b 4 qn
-    r <- get recorder
-    recorder' <- recordIO r (b 4 qn)
-    recorder $= recorder'
-    postRedisplay Nothing
--- all notes that have been played until this function is called are played together
-keyboard recorder (Char 'r') Down _ _ = do
-    r <- get recorder
+import StateRecorder
+
+keyboard recorder (Graphics.UI.GLUT.Char 'r') Down _ _ = do
+    r <- Graphics.Rendering.OpenGL.get recorder
     play $ line $ reverse (notes r)
     postRedisplay Nothing
+
+keyboard recorder (Graphics.UI.GLUT.Char stroke) Down _ _ = do    
+    case convertStrokeToPitchClass stroke of
+        Just x -> do
+            let noteToBePlayed = note 0.25 (x,4::Octave)
+            play $ noteToBePlayed
+            r <- Graphics.Rendering.OpenGL.get recorder
+            recorder' <- recordIO r noteToBePlayed
+            recorder $= recorder'
+        Nothing -> return ()
+    postRedisplay Nothing
 keyboard _  _ _ _ _ = return ()
+
+convertStrokeToPitchClass :: Char -> Maybe PitchClass
+convertStrokeToPitchClass stroke = do
+    let upper = toUpper stroke
+    readMaybe [upper] :: Maybe PitchClass
