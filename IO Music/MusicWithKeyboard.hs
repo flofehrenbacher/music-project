@@ -21,6 +21,7 @@ import Control.Concurrent.Chan
 import Data.IORef
 new = newIORef
 
+main :: IO()
 main = do
     (progName, _) <- getArgsAndInitialize
     initialDisplayMode $= [DoubleBuffered]
@@ -29,28 +30,32 @@ main = do
     createAWindow progName myChannel
     mainLoop
 
+createAWindow :: String -> Chan (Maybe (Time, [Message])) -> IO()
 createAWindow windowName myChannel = do
     createWindow windowName
     recorder <- new $ MyRecorder []
     displayCallback $= display myChannel
     keyboardMouseCallback $= Just (keyboard recorder)
 
+display :: Chan (Maybe (Time,[Message])) -> IO ()
 display myChannel = do
     clear [ColorBuffer]
     loadIdentity
     forkIO $ doSomeThing myChannel
     swapBuffers
     flush
-    
+
+-- ???
+doSomeThing :: Chan (Maybe (Time,[Message])) -> IO ()
 doSomeThing myChannel = do
     midiMessage <- readChan myChannel
     case midiMessage of
         Just something -> do 
-            pitchClass <- transformMidiKeyToPitch $ midiMessage
+            pitchClass <- midiMessageToPlay $ midiMessage
             case pitchClass of
                 Just x -> do
-                    scale 0.0005 0.0005 (0.0005::GLfloat)
                     print x
+                    scale 0.0005 0.0005 (0.0005::GLfloat)
                     renderString MonoRoman (pitchToString x)
                 Nothing -> return ()
         Nothing -> return ()

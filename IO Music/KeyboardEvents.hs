@@ -12,7 +12,7 @@ import StateRecorder
 
 keyboard recorder (Graphics.UI.GLUT.Char 'r') Down _ _ = do
     r <- Graphics.Rendering.OpenGL.get recorder
-    play $ line $ reverse (notes r)
+    playS $ line $ reverse (notes r)
     postRedisplay Nothing
 
 keyboard recorder (Graphics.UI.GLUT.Char stroke) Down _ _ = do    

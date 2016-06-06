@@ -16,12 +16,17 @@ import Euterpea
 
 initMidi :: IO (Chan (Maybe (Time,[Message])))
 initMidi = do
-    (((deviceID,_):_) ,_) <- getAllDevices
+    deviceID <- getFirstDeviceID
     channel <- newChan
     _ <- forkIO $ midiLoop deviceID channel
     return channel
+
+getFirstDeviceID :: IO InputDeviceID
+getFirstDeviceID = do
+    (((deviceID,_):_) ,_) <- getAllDevices
+    return deviceID
     
-midiLoop :: InputDeviceID -> Chan (Maybe (Time,[Message])) ->IO ()
+midiLoop :: InputDeviceID -> Chan (Maybe (Time,[Message])) -> IO ()
 midiLoop deviceID channel = do
     initializeMidi
     midiMessage <- pollMidi deviceID
@@ -30,18 +35,23 @@ midiLoop deviceID channel = do
         Just x -> writeChan channel midiMessage
     threadDelay 100000
     midiLoop deviceID channel
-    
-    
-    
-    
-    
-    
-transformMidiKeyToPitch :: (Maybe (Time,[Message])) -> IO (Maybe PitchClass)
-transformMidiKeyToPitch (Just (_,((noteOn@(NoteOn _ key _) : _)))) = do
-    let (x , _) = pitch key
-    _ <- forkIO $ play $ Prim (Note 0.05 (pitch key))
-    return (Just x)
-transformMidiKeyToPitch _ = return Nothing
+
+
+filterNoteOn :: Message -> Maybe Pitch
+filterNoteOn    (NoteOn _ key _) = Just $ pitch key
+filterNoteOn    _                = Nothing
+
+midiMessageToMusicPitch :: Message -> Maybe (Music Pitch)
+midiMessageToMusicPitch    message = (Prim . Note 0.05) <$> filterNoteOn message
+
+midiMessageToPlay :: (Maybe (Time,[Message])) -> IO (Maybe PitchClass)
+midiMessageToPlay (Just (_,(message : _))) = do
+    case midiMessageToMusicPitch message of
+        Just musicPitch -> do 
+            _ <- forkIO $ play musicPitch
+            return (fmap fst (filterNoteOn message))
+        Nothing         -> return Nothing
+midiMessageToPlay _ = return Nothing
 
 playDisplayedNotes :: [Music Pitch] -> IO ()
 playDisplayedNotes    []            = return ()
