@@ -1,8 +1,0 @@
-zwei threads
-programm, dass midi initialisiert (erstes aus getalldevices)
-Data.Time
-
-Thread umschreiben / integrieren in MusicWith...
-initMidi soll forkIO aufrufen / nicht mainLoop
-IORef für midiMessage
-besser: channel (schreiben und lesen)

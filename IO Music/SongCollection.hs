@@ -1,32 +1,18 @@
-module HaskellMusic where
-
--- aufgabe:
--- billigkeyboard: töne eingeben und return drücken -> ton ausgeben -> falsche eingabe error
--- opengl fenster öffnen und tastatureingabe über opengl steuern
--- optional: R -> alle töne bisher nochmal
-
--- :=:,:+: have precedence 5 and are right-associative ----
--- for markovChain import Data.MarkovChain and System.Random to use mkStdGen
--- run (prediction Context) (training Sequence) (index to start random walk)
--- mkStdGen erzeugt zufallsgenerator
-
-import Text.Read
-import Data.Char
+module SongCollection where
 
 import HelpingFunctions
 import Script.AuxilaryFunctions
 
+import Data.Char
+import Data.MarkovChain
 import Euterpea
 import HSoM
-import Data.MarkovChain
 import System.Random
-
--- Types
-entchenMelody, haenschenMelody, madMelody :: Music Pitch
-entchenList, haenschenList, madList :: [Music Pitch]
+import Text.Read
 
 -- play melody of song randomly
-playRandom  song  = play $ line $ run 4 song 0 (mkStdGen 2)
+playRandom :: [Music Pitch] -> IO ()
+playRandom    song          = play $ line $ run 4 song 0 (mkStdGen 2)
 
 {------------------------ Alle meine Entchen ----------------------------}
 
@@ -37,8 +23,10 @@ e3 = timesM 4 (a 4 qn) :+: (g 4 wn)
 e4 = timesM 4 (f 4 qn) :+: timesM 2 (e 4 hn)
 e5 = timesM 4 (g 4 qn) :+: c 4 wn
 
+entchenMelody :: Music Pitch
 entchenMelody =  e1 :+: timesM 2 e2 :+: e3 :+: e4 :+: e5
 
+entchenList :: [Music Pitch]
 entchenList = musicToList entchenMelody
 
 {------------------------- Haenschen Klein --------------------------------}
@@ -50,8 +38,10 @@ h3 = addDur en [d 4, fs 4, a 4, a 4] :+: d 4 hn
 h4 = timesM 5 (e 4 en) :+: fs 4 en :+: g 4 qn
 h5 = timesM 5 (fs 4 en) :+: g 4 en :+: a 4 qn
 
+haenschenMelody :: Music Pitch
 haenschenMelody = h1 :+: h2 :+: h1 :+: h3 :+: h4 :+: h5 :+: h1 :+: h3
 
+haenschenList :: [Music Pitch]
 haenschenList = musicToList haenschenMelody
 
 {--------------------------- MAD WORLD ----------------------------------}
@@ -77,11 +67,14 @@ m4 = addDur en [d 5, bf 4] :+: rest en :+: addDur en [bf 4, d 5, d 5, bf 4, bf 4
 m5 = addDur en [d 5, bf 4, bf 4, bf 4, d 5, d 5, bf 4, bf 4]
 
 -- melody put together
+madMelody :: Music Pitch
 madMelody = mi :+: timesM 4 m12 :+: m3' :+: m4 :+: m3 :+: m5 :+: m3 :+: m4 :+: m3 :+: m5
 
 -- converted to list
+madList :: [Music Pitch]
 madList = musicToList madMelody
 
 -- komisch nach erstem Durchlauf wegen Tempo????
+madWorld :: Music Pitch
 madWorld = let t = (88/120)
            in tempo t madMelody

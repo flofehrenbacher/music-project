@@ -1,24 +1,18 @@
 {-# LANGUAGE FlexibleContexts #-}
-module MusicWithKeys where
-
-import Euterpea
-
-import Graphics.UI.GLUT
-import Graphics.Rendering.OpenGL
-
-import Control.Concurrent
+module MidiMusicOpenGL where
 
 import KeyboardEvents
+import MidiFun
 import StateRecorder
-import MidiPoll
-import HaskellMusic
-
---MIDI
-import Euterpea.IO.MIDI.GeneralMidi
-import Euterpea.IO.MIDI.MidiIO
 
 import Control.Concurrent.Chan
 import Data.IORef
+import Euterpea
+import Euterpea.IO.MIDI.GeneralMidi
+import Euterpea.IO.MIDI.MidiIO
+import Graphics.Rendering.OpenGL
+import Graphics.UI.GLUT
+
 new = newIORef
 
 main :: IO()
@@ -41,21 +35,5 @@ display :: Chan (Maybe (Time,[Message])) -> IO ()
 display myChannel = do
     clear [ColorBuffer]
     loadIdentity
-    forkIO $ doSomeThing myChannel
     swapBuffers
     flush
-
--- ???
-doSomeThing :: Chan (Maybe (Time,[Message])) -> IO ()
-doSomeThing myChannel = do
-    midiMessage <- readChan myChannel
-    case midiMessage of
-        Just something -> do 
-            pitchClass <- midiMessageToPlay $ midiMessage
-            case pitchClass of
-                Just x -> do
-                    print x
-                    scale 0.0005 0.0005 (0.0005::GLfloat)
-                    renderString MonoRoman (pitchToString x)
-                Nothing -> return ()
-        Nothing -> return ()

@@ -20,5 +20,10 @@ main  = do
             l <- getLine
             play $ (stringToPitchClass l) 4 wn
 
+test :: IO ()
+test = do
+    play $ forever (c 4 wn) :=: forever (e 4 qn)
+    
+            
 main' :: IO ()
 main' = putStrLn "enter note to be played: " >> getLine >>= \l -> play $ (stringToPitchClass l) 4 wn
