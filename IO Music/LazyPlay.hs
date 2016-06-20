@@ -6,27 +6,26 @@ import Control.Concurrent
 import Euterpea.IO.MIDI.GeneralMidi
 import Euterpea.IO.MIDI.MidiIO
 import Euterpea
+import HaskellOx4
+-- wie kann ich spezielle Funktionen importieren
 
-main :: IO()
-main = getFirstDeviceID >>= readNotes >>= play
+playNotesOnKeyboard :: IO()
+playNotesOnKeyboard = do
+    initializeMidi
+    inputID <- getFirstDeviceID
+    outputID <- getFirstOutputID
+    loopy inputID outputID 
 
-readNotes :: InputDeviceID -> IO (Music Pitch)
-readNotes    devID         = do
-    note <- readNote devID
-    notes <- readNotes devID
-    return $ note :+: notes
+-- idleCallback
+loopy :: InputDeviceID -> OutputDeviceID  -> IO()
+loopy inputID outputID = readMidi ([inputID],[outputID], False) >>  loopy inputID outputID
 
--- CASES IN MAYBE MIT DONOTATION
-readNote :: InputDeviceID -> IO (Music Pitch)
-readNote    devID         = do
-    midiMessage <- pollMidi devID
-    case midiMessage of
-        Just (_,(message : _)) -> do
-            case midiMessageToMusicPitch message of
-                Nothing -> do
-                    print "invalid Message"
-                    return (rest wn)
-                Just musicPitch -> do
-                    print "test"
-                    return musicPitch
-        Nothing -> print "no message" >> return (rest wn)
+initKeyboard :: IO (InputDeviceID, OutputDeviceID)
+initKeyboard = do
+    initializeMidi
+    inputID <- getFirstDeviceID
+    outputID <- getFirstOutputID
+    return (inputID, outputID)
+
+loopGL :: InputDeviceID -> OutputDeviceID  -> IO()
+loopGL  inputID outputID = readMidi ([inputID],[outputID], False)

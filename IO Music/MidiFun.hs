@@ -16,8 +16,12 @@ initMidi = do
 
 getFirstDeviceID :: IO InputDeviceID
 getFirstDeviceID = do
-    initializeMidi
     (((deviceID,_):_) ,_) <- getAllDevices
+    return deviceID
+
+getFirstOutputID :: IO OutputDeviceID
+getFirstOutputID = do
+    (_ ,((deviceID,_):_)) <- getAllDevices
     return deviceID
     
 midiLoop :: InputDeviceID -> Chan (Maybe (Time,[Message])) -> IO ()
