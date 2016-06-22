@@ -10,6 +10,9 @@ import HSoM
 import System.Random
 import Text.Read
 
+song :: [Music Pitch]
+song =  entchenList
+
 -- play melody of song randomly
 playRandom :: [Music Pitch] -> IO ()
 playRandom    song          = play $ line $ run 4 song 0 (mkStdGen 2)
@@ -24,7 +27,7 @@ e4 = timesM 4 (f 4 qn) :+: timesM 2 (e 4 hn)
 e5 = timesM 4 (g 4 qn) :+: c 4 wn
 
 entchenMelody :: Music Pitch
-entchenMelody =  e1 :+: timesM 2 e2 :+: e3 :+: e4 :+: e5
+entchenMelody =  e1 :+: e2 :+: e3 :+: e4 :+: e5
 
 entchenList :: [Music Pitch]
 entchenList = musicToList entchenMelody
