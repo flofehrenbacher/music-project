@@ -1,7 +1,6 @@
 module MidiFun where
 
 import Control.Concurrent
-import Control.Concurrent.Chan
 
 import Euterpea.IO.MIDI.GeneralMidi
 import Euterpea.IO.MIDI.MidiIO
@@ -23,6 +22,13 @@ getFirstOutputID :: IO OutputDeviceID
 getFirstOutputID = do
     (_ ,((deviceID,_):_)) <- getAllDevices
     return deviceID
+
+initKeyboard :: IO (InputDeviceID, OutputDeviceID)
+initKeyboard = do
+    initializeMidi
+    inputID <- getFirstDeviceID
+    outputID <- getFirstOutputID
+    return (inputID, outputID)
     
 midiLoop :: InputDeviceID -> Chan (Maybe (Time,[Message])) -> IO ()
 midiLoop deviceID channel = do

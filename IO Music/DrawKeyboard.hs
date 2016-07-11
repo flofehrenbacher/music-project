@@ -2,10 +2,34 @@ module DrawKeyboard where
 
 import DrawFun
 import DrawText
+import NoteLine
+import Types
 
+import Data.IORef
 import Euterpea
-import Graphics.UI.GLUT
 import Graphics.Rendering.OpenGL
+
+
+drawKeyboard :: DisplayInfo -> IO ()
+drawKeyboard    (greenRef,redRef,songInfoRef,lastPlayedNote,xRef) = do
+    translate$Vector3 (-0.7::GLfloat) (-0.7) 0
+    x <- readIORef xRef
+    currentPitchClassPlayed <- readIORef lastPlayedNote
+    songInfo <- readIORef songInfoRef
+    case songInfo of
+        -- song ends
+        Nothing -> do
+            preservingMatrix $ showTextAboveKeyboard "Song finished!" (-0.4)
+            preservingMatrix $ keyboardFigure Nothing Nothing
+            preservingMatrix drawLines
+        -- song continues
+        Just (noteToBePlayed, restNotes) -> do
+            preservingMatrix $ showTextAboveKeyboard (pitchToString noteToBePlayed) x
+            preservingMatrix $ showNoteAboveKeyboard (pitchInformation noteToBePlayed) x
+            xRightNote <- readIORef greenRef
+            xWrongNote <- readIORef redRef
+            preservingMatrix $ keyboardFigure xRightNote xWrongNote
+            preservingMatrix drawLines
 
 whiteKeyPoints :: [(GLfloat, GLfloat, GLfloat)]
 whiteKeyPoints = [(0,0,0), (0.95,0,0), (0.95,4,0), (0,4,0)]
@@ -14,7 +38,7 @@ blackKeyPoints :: [(GLfloat, GLfloat, GLfloat)]
 blackKeyPoints = [(0.75, 1.5, 0), (1.25, 1.5 ,0), (1.25, 3.95, 0), (0.75, 3.95, 0)]
 
 keyboardFigure :: Maybe GLfloat -> Maybe GLfloat -> IO ()
-keyboardFigure xRightNote xFalseNote = do
+keyboardFigure xRightNote xWrongNote = do
     scale 0.2 0.2 (0::GLfloat)
     renderAs Quads whiteKeyPoints
     preservingMatrix $ drawNKeys nextWhiteKey 6
@@ -24,7 +48,7 @@ keyboardFigure xRightNote xFalseNote = do
                     translate$Vector3 (fl::GLfloat) 0 0
                     renderPrimitive Quads greenKey
         Nothing -> return ()
-    case xFalseNote of
+    case xWrongNote of
         Just fl -> do
                 preservingMatrix $ do
                     translate$Vector3 (fl::GLfloat) 0 0
