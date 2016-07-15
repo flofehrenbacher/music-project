@@ -1,6 +1,6 @@
 module IORefs where
 
-import DrawText
+import UserInput
 import SongCollection
 import Types
 

@@ -1,4 +1,4 @@
-module DrawText where
+module View.Text where
 
 import NoteLine
 
@@ -7,15 +7,6 @@ import Data.Time.Clock
 import Euterpea
 import Graphics.UI.GLUT
 import Graphics.Rendering.OpenGL
-
-getRestInfo :: [Music Pitch] -> IO (Maybe (PitchClass, [Music Pitch]))
-getRestInfo    []            = return Nothing
-getRestInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) = do
-    return (Just (pitchClass, notes))
-getRestInfo    ((Prim (Rest _)) : notes) = do
-    getRestInfo notes
-getRestInfo    _            = do
-    return Nothing
 
 placeNoteToBePlayed :: NominalDiffTime -> GLfloat
 placeNoteToBePlayed difference = if difference < 6.3 then sin (realToFrac (difference) ) / 1.65 else 0
@@ -67,37 +58,3 @@ pitchInformation    B          =  ("B", 0.1)
 pitchInformation    Bs         =  ("Bs", 0.1)
 pitchInformation    Bf         =  ("Bb", 0.1)
 pitchInformation    _          =  ("unbekannt", (-0.1))
-
-pitchToString :: PitchClass -> String
-pitchToString    C          = "C"
-pitchToString    D          = "D"
-pitchToString    E          = "E"
-pitchToString    F          = "F"
-pitchToString    G          = "G"
-pitchToString    A          = "A"
-pitchToString    B          = "B"
-pitchToString    Cs         = "Cs"
-pitchToString    Ds         = "Ds"
-pitchToString    Es         = "Es"
-pitchToString    Fs         = "Fs"
-pitchToString    Gs         = "Gs"
-pitchToString    As         = "As"
-pitchToString    Bs         = "Bs"
-pitchToString    Cf         = "Cb"
-pitchToString    Df         = "Db"
-pitchToString    Ef         = "Eb"
-pitchToString    Ff         = "Fb"
-pitchToString    Gf         = "Gb"
-pitchToString    Af         = "Ab"
-pitchToString    Bf         = "Bb"
-pitchToString    _          = "unbekannt"
-
-pitchToHeight :: PitchClass -> GLfloat
-pitchToHeight    C          =  (-0.05)
-pitchToHeight    D          =  (-0.025)
-pitchToHeight    E          =  0
-pitchToHeight    F          =  0.025
-pitchToHeight    G          =  0.05
-pitchToHeight    A          =  0.075
-pitchToHeight    B          =  0.1
-pitchToHeight    _          =  0

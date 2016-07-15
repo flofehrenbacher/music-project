@@ -11,7 +11,10 @@ import System.Random
 import Text.Read
 
 song :: [Music Pitch]
-song =  madList
+song = haenschenList
+
+allNotes :: [Music Pitch]
+allNotes  = map (pitchToMusic qn) $ map pitch [60..71]
 
 -- play melody of song randomly
 playRandom :: [Music Pitch] -> IO ()

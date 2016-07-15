@@ -12,3 +12,4 @@ type SongInfo = IORef (Maybe (PitchClass, [Music Pitch]))
 type NotePlace = IORef GLfloat
 type MyTime = IORef UTCTime
 type DisplayInfo = (GreenPlace, RedPlace, SongInfo, LastNote, NotePlace)
+-- data DisplayInfo = Display {greenPlace :: GreenPlace}(GreenPlace, RedPlace, SongInfo, LastNote, NotePlace)

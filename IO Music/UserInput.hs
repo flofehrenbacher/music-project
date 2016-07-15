@@ -1,7 +1,7 @@
 module UserInput where
 
-import DrawKeyboard
-import DrawText
+import View.Keyboard
+import View.Text
 import Types
 
 import Data.Time.Clock
@@ -20,6 +20,15 @@ isAbsPitchTheSame   _                   _                 = False
 updateLastPlayedNote :: LastNote    -> Maybe (PitchClass)     -> IO()
 updateLastPlayedNote    lastPlayedNote (Just pc)              = lastPlayedNote $= Just pc
 updateLastPlayedNote    _              _                      = return ()
+
+getRestInfo :: [Music Pitch] -> IO (Maybe (PitchClass, [Music Pitch]))
+getRestInfo    []            = return Nothing
+getRestInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) = do
+    return (Just (pitchClass, notes))
+getRestInfo    ((Prim (Rest _)) : notes) = do
+    getRestInfo notes
+getRestInfo    _            = do
+    return Nothing
 
 updateSongInfo :: Maybe (PitchClass) -> Maybe (PitchClass, [Music Pitch])  -> GreenPlace -> RedPlace -> SongInfo -> IORef UTCTime -> IO()
 updateSongInfo    _                     Nothing                               _             _           _           _             = return ()

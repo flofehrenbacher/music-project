@@ -29,4 +29,4 @@ majorScale    p     = line $ map (pitchToMusic qn) $ (toScale p)
 toScale :: Pitch -> [Pitch]
 toScale    p     = [p, trans 2 p, (trans 4 p),(trans 5 p),(trans 7 p),(trans 9 p),(trans 11 p),(trans 12 p)]
                 ++ reverse [p,(trans 2 p),(trans 4 p),(trans 5 p),(trans 7 p),(trans 9 p),(trans 11 p),(trans 12 p)]
-
+            

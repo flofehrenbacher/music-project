@@ -1,8 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 module EasyNotes where
 
-import DrawText
-import DrawKeyboard
+import View.Text
+import View.Keyboard
 import IORefs
 import UserInput
 import MidiFun
@@ -18,18 +18,19 @@ main :: IO ()
 main = do
     (progName, _) <- getArgsAndInitialize
     initialDisplayMode $= [DoubleBuffered]
-    initialWindowSize $= Size 1366 768
+    initialWindowSize $= Size 700 500
     createWindow progName
     (displayInfo, startTimeRef) <- setUpIORefs
     (inputID, outputID) <- initKeyboard
     idleCallback    $= Just    (idle startTimeRef (inputID, outputID) displayInfo)
     displayCallback $= display displayInfo
+    reshapeCallback $= Just reshape
     mainLoop
 
 idle ::  MyTime        -> (InputDeviceID,OutputDeviceID) -> DisplayInfo                                      ->  IdleCallback
-idle     startTimeRef     (inputID, outputID)              (greenRef,redRef,songInfoRef,lastPlayedNote,xRef) = do
+idle     startTimeRef     (inputID, outputID)              (greenRef,redRef,songInfoRef,lastPlayedNote,placeForNote) = do
     difference <- computePassedTime startTimeRef
-    xRef $= placeNoteToBePlayed difference
+    placeForNote $= placeNoteToBePlayed difference
     currentMsg <- readMidi [inputID] [outputID]
     currentPitchClassPlayed <- midiToPitchClass currentMsg
     updateLastPlayedNote lastPlayedNote currentPitchClassPlayed
@@ -44,3 +45,8 @@ display    displayInfo = do
     preservingMatrix $ drawKeyboard displayInfo
     swapBuffers
     flush
+    
+reshape :: ReshapeCallback
+reshape (Size width height) = do
+    viewport $= (Position ((width - 700) `div` 2)  ((height - 500) `div` 2), (Size 700 500))
+    postRedisplay Nothing

@@ -1,4 +1,4 @@
-module DrawFun where
+module View.Fun where
 
 import Graphics.UI.GLUT
 import Graphics.Rendering.OpenGL
