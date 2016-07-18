@@ -4,7 +4,7 @@ import View.Fun
 import View.Text
 import Modi
 import View.NoteLine
-import Types
+import DisplayInfo
 
 import Data.IORef
 import Euterpea
@@ -23,11 +23,11 @@ renderAllTogether    displayInfo modus = do
             preservingMatrix drawLines
         -- song continues
         Just (noteToBePlayed, restNotes) -> do
-            if modus /= hard then preservingMatrix $ showTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
+            if modus /= Hard then preservingMatrix $ showTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
             preservingMatrix $ showNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
             preservingMatrix $ renderKeyboard (greenPlace displayInfo) (redPlace displayInfo)
-            if modus == easy then preservingMatrix $ labelKeys
+            if modus == Easy then preservingMatrix $ labelKeys
                 else return ()
             preservingMatrix $ drawLines
 
