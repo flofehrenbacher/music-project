@@ -11,7 +11,7 @@ import Euterpea
 import Graphics.Rendering.OpenGL
 
 
-renderAllTogether :: DisplayInfo -> Difficulty -> IO ()
+renderAllTogether :: DisplayInfo -> Modus -> IO ()
 renderAllTogether    displayInfo modus = do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let currentPitchClassPlayed = lastNote displayInfo

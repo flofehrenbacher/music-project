@@ -16,8 +16,8 @@ getFirstOutputID = do
     (_ ,((deviceID,_):_)) <- getAllDevices
     return deviceID
 
-initKeyboard :: IO (InputDeviceID, OutputDeviceID)
-initKeyboard = do
+initDevices :: IO (InputDeviceID, OutputDeviceID)
+initDevices = do
     initializeMidi
     inputID <- getFirstDeviceID
     outputID <- getFirstOutputID

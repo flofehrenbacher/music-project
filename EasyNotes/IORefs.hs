@@ -2,7 +2,7 @@ module IORefs where
 
 import UserInput
 import SongCollection
-import Types
+import DisplayInfo
 
 import Data.IORef
 import Data.Time.Clock

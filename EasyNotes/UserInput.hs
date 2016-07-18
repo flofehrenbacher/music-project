@@ -14,7 +14,7 @@ import Graphics.Rendering.OpenGL
 
 isAbsPitchTheSame :: Maybe PitchClass -> Maybe PitchClass -> Bool
 isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)      | pcToInt pcOne == pcToInt pcTwo = True
-                                                          | otherwise = False
+                                                           | otherwise = False
 isAbsPitchTheSame   _                   _                 = False
 
 getRestInfo :: [Music Pitch] -> Maybe (PitchClass, [Music Pitch])
@@ -30,14 +30,13 @@ updateSongInfo    displayInfo startTimeRef  = do
             let restNotes = (fmap snd (songInfo displayInfo))
             -- RIGHT NOTE WAS PLAYED
             if isAbsPitchTheSame noteToBePlayed (lastNote displayInfo) then do
-                let displayInfo1 = displayInfo {greenPlace = findPlaceFor <$> noteToBePlayed, redPlace = Nothing, songInfo = getRestInfo =<< restNotes, lastNote = Nothing}
+                let newDisplayInfo = displayInfo {greenPlace = findPlaceFor <$> noteToBePlayed, redPlace = Nothing, songInfo = getRestInfo =<< restNotes, lastNote = Nothing}
                 curTime <- getCurrentTime
                 startTimeRef $= curTime
-                return displayInfo1
+                return newDisplayInfo
             -- WRONG NOTE WAS PLAYED
             else do
                 case (lastNote displayInfo) of
                     Nothing -> return displayInfo
                     playedNote -> do
-                        let displayInfo1 = displayInfo {greenPlace = Nothing, redPlace = findPlaceFor <$> playedNote}
-                        return displayInfo1
+                        return $ displayInfo {greenPlace = Nothing, redPlace = findPlaceFor <$> playedNote}
