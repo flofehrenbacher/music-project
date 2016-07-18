@@ -1,7 +1,6 @@
 module Songs.HelpingFunctions where
 
 import Euterpea
-import HSoM
 
 -- transforms phrase of music into list of primitives
 musicToList :: Music a      -> [Music a]
