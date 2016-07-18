@@ -1,8 +1,7 @@
 module MouseEvents where
 
--- import IORefs
 import MidiFun
-import Types
+import DisplayInfo
 
 import Data.IORef
 import Euterpea

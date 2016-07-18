@@ -2,7 +2,7 @@ module UserInput where
 
 import View.Keyboard
 import View.Text
-import Types
+import DisplayInfo
 
 import Data.Time.Clock
 import Euterpea.IO.MIDI.GeneralMidi
