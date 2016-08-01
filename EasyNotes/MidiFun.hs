@@ -1,8 +1,5 @@
 module MidiFun where
 
-import Control.Concurrent
-
-import Euterpea.IO.MIDI.GeneralMidi
 import Euterpea.IO.MIDI.MidiIO
 import Euterpea
 
@@ -39,18 +36,6 @@ filterNoteOn    (NoteOn _ key _) = Just $ pitch key
 filterNoteOn    _                = Nothing
 
 -- modified version of donya quicks readMidi
-readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
-readMidi devsIn devsOut = do
-    let f [] = Nothing
-        f xs = Just $ map (\m -> (0, Std $ m)) xs
-        g Nothing = []
-        g (Just (t,ms)) = ms
-    msgs <- sequence $ map pollMidi devsIn -- get MIDI messages coming
-    let actual = head msgs 
-    let outVal = f $ concatMap g msgs
-    sequence $ map (\d -> sendMidiOut d outVal) devsOut
-    return actual
-
 sendMidiOut :: OutputDeviceID -> Maybe [(Time, MidiMessage)] -> IO ()
 sendMidiOut dev ms = outputMidi dev >> 
     maybe (return ()) (mapM_ (\(t,m) -> deliverMidiEvent dev (0, m))) ms

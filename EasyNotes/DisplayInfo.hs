@@ -1,10 +1,7 @@
 module DisplayInfo where
 
 import Euterpea
-import Euterpea.IO.MIDI.GeneralMidi
-import Euterpea.IO.MIDI.MidiIO
 import Data.IORef
-import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 import Data.Time.Clock
 
