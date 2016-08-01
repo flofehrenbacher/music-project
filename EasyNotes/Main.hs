@@ -5,7 +5,7 @@ import Idle
 import Display
 import Reshape
 import DisplayInfo
-import Modi
+import Modus
 import MouseEvents
 import SongCollection
 import MidiFun
@@ -17,25 +17,26 @@ import Text.Read
 main :: IO ()
 main = do
     (progName, args) <- getArgsAndInitialize
-    arguments <- setModusAndSong args
-    startWithArguments arguments progName
+    (modus, song) <- setModusAndSong args
+    case (modus, song) of
+        (Just modus', Just song') -> startSong (modus',song') progName
+        (_          , _         ) ->  do
+            putStrLn $ "The first argument must be the difficulty: " ++ unwords getAllModi
+            putStrLn "The second argument must be the song you want to learn" 
+            putStrLn $ "You can choose between " ++ unwords allSongs
 
-startWithArguments :: (Maybe Modus, Maybe Song) -> String -> IO()
-startWithArguments    (Just myModus, Just song)  progName       = do
+startSong :: (Modus, Song)                 -> String    -> IO()
+startSong    (modus,song)                     progName  =  do
     initialDisplayMode $= [DoubleBuffered]
-    initialWindowSize $= Size 700 500
+    initialWindowSize  $= Size 700 500
     createWindow progName
     (displayInfoRef, startTimeRef) <- setUpDisplayInfo song
     (inputID, outputID) <- initDevices
     mouseCallback   $= Just (mouse displayInfoRef outputID)
-    idleCallback    $= Just    (idle startTimeRef (inputID, outputID) displayInfoRef)
-    displayCallback $= display displayInfoRef myModus
+    idleCallback    $= Just (idle startTimeRef (inputID, outputID) displayInfoRef)
+    displayCallback $= display displayInfoRef modus
     reshapeCallback $= Just reshape
     mainLoop
-startWithArguments  _                 _                   = do
-    putStrLn "The first argument must be: easy, medium or hard"
-    putStrLn "The second one must be the song you want to learn" 
-    putStrLn "AlleMeineEntchen, HaenschenKlein, MadWorld, AllNotes"
 
 setModusAndSong :: [String]    -> IO (Maybe Modus, Maybe Song)
 setModusAndSong    (myModus : song : []) = do

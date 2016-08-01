@@ -2,7 +2,7 @@ module View.Keyboard where
 
 import View.Fun
 import View.Text
-import Modi
+import Modus
 import View.NoteLine
 import DisplayInfo
 
@@ -67,7 +67,7 @@ colourBlackKeyRed   (Just fl) | isInt fl == False = preservingMatrix $ do
 colourBlackKeyRed    _                  = return ()
 
 isInt :: GLfloat -> Bool
-isInt x = x == fromInteger (round x)
+isInt    x       = x == fromInteger (round x)
 
 drawBlackKeys :: IO ()
 drawBlackKeys = do

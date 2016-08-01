@@ -2,7 +2,7 @@ module Display where
 
 import Graphics.UI.GLUT
 import DisplayInfo
-import Modi
+import Modus
 import Data.IORef
 import View.Keyboard
 

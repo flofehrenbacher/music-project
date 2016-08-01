@@ -12,9 +12,12 @@ type Song = [Music Pitch]
 
 songCollection :: [(String,Song)]
 songCollection = [("AlleMeineEntchen",entchenList),
-                  ("HaenschenKlein", haenschenList),
                   ("AllNotes",allNotes),
+                  ("HaenschenKlein", haenschenList),
                   ("MadWorld",madList)]
 
-allNotes :: [Music Pitch]
+allSongs :: [String]
+allSongs  =  map fst songCollection
+
+allNotes :: Song
 allNotes  = map (pitchToMusic qn) $ map pitch [60..71]
