@@ -14,6 +14,9 @@ import Data.IORef
 import Graphics.UI.GLUT
 import Text.Read
 
+-- | starts the whole program
+-- if modus and song were delivered correctly the song starts
+-- otherwise the possibilities for modus and song will be printed to the console
 main :: IO ()
 main = do
     (progName, args) <- getArgsAndInitialize
@@ -25,6 +28,8 @@ main = do
             putStrLn "The second argument must be the song you want to learn" 
             putStrLn $ "You can choose one of the following: " ++ unwords allSongs
 
+-- | starts the mainWindow, initializes the information according to the song,
+-- initializes MidiDevices and callbacks
 startSong :: (Modus, Song)                 -> String    -> IO()
 startSong    (modus,song)                     progName  =  do
     initialDisplayMode $= [DoubleBuffered]
@@ -38,6 +43,7 @@ startSong    (modus,song)                     progName  =  do
     reshapeCallback $= Just reshape
     mainLoop
 
+-- | checks if only two arguments were delivered
 setModusAndSong :: [String]    -> IO (Maybe Modus, Maybe Song)
 setModusAndSong    (myModus : song : []) = do
     return $ (readMaybe myModus, lookup song songCollection)
