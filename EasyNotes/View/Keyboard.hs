@@ -7,13 +7,11 @@ import View.Key
 import View.NoteLine
 import DisplayInfo
 
-import Data.IORef
-import Euterpea
 import Graphics.Rendering.OpenGL
 
 
 renderAllTogether :: DisplayInfo -> Modus -> IO ()
-renderAllTogether    displayInfo modus = do
+renderAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let currentPitchClassPlayed = lastNote displayInfo
     case songInfo displayInfo of
