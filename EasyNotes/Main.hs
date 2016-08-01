@@ -23,7 +23,7 @@ main = do
         (_          , _         ) ->  do
             putStrLn $ "The first argument must be the difficulty: " ++ unwords getAllModi
             putStrLn "The second argument must be the song you want to learn" 
-            putStrLn $ "You can choose between " ++ unwords allSongs
+            putStrLn $ "You can choose one of the following: " ++ unwords allSongs
 
 startSong :: (Modus, Song)                 -> String    -> IO()
 startSong    (modus,song)                     progName  =  do
