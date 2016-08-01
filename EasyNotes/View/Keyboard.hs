@@ -3,6 +3,7 @@ module View.Keyboard where
 import View.Fun
 import View.Text
 import Modus
+import View.Key
 import View.NoteLine
 import DisplayInfo
 
@@ -43,94 +44,28 @@ renderKeyboard    xRightNote       xWrongNote = do
     colourBlackKeyRed xWrongNote
 
 colourWhiteKeyGreen :: Maybe GLfloat -> IO ()
-colourWhiteKeyGreen   (Just fl) | isInt fl = preservingMatrix $ do
+colourWhiteKeyGreen   (Just fl) | isWhiteKey fl = preservingMatrix $ do
     translate$Vector3 (fl::GLfloat) 0 0
     renderPrimitive Quads greenKey
 colourWhiteKeyGreen    _                  = return ()
 
 colourWhiteKeyRed :: Maybe GLfloat -> IO ()
-colourWhiteKeyRed   (Just fl) | isInt fl = preservingMatrix $ do
+colourWhiteKeyRed   (Just fl) | isWhiteKey fl = preservingMatrix $ do
     translate$Vector3 (fl::GLfloat) 0 0
     renderPrimitive Quads redKey
 colourWhiteKeyRed    _                  = return ()
 
 colourBlackKeyGreen :: Maybe GLfloat -> IO ()
-colourBlackKeyGreen   (Just fl) | isInt fl == False = preservingMatrix $ do
+colourBlackKeyGreen   (Just fl) | isWhiteKey fl == False = preservingMatrix $ do
     translate$Vector3 (fl::GLfloat) 0 0
     renderPrimitive Quads greenBlackKey
 colourBlackKeyGreen    _                  = return ()
 
 colourBlackKeyRed :: Maybe GLfloat -> IO ()
-colourBlackKeyRed   (Just fl) | isInt fl == False = preservingMatrix $ do
+colourBlackKeyRed   (Just fl) | isWhiteKey fl == False = preservingMatrix $ do
     translate$Vector3 (fl::GLfloat) 0 0
     renderPrimitive Quads redBlackKey
 colourBlackKeyRed    _                  = return ()
 
-isInt :: GLfloat -> Bool
-isInt    x       = x == fromInteger (round x)
-
-drawBlackKeys :: IO ()
-drawBlackKeys = do
-    currentColor $= Color4 0 0 0 1
-    renderAs Quads blackKeyPoints
-    preservingMatrix $ nextBlackKey >> translate (Vector3 (1::GLfloat) 0 0) >> drawNKeys nextBlackKey 3
-
-nextBlackKey :: IO ()
-nextBlackKey = do
-    translate$Vector3 (1::GLfloat) 0 0
-    renderAs Quads blackKeyPoints
-
-nextWhiteKey :: IO ()
-nextWhiteKey = do
-    translate$Vector3 (1::GLfloat) 0 0
-    renderAs Quads whiteKeyPoints
-    
-drawNKeys :: IO () -> Int -> IO ()
-drawNKeys key 1 = key
-drawNKeys key n = key >> drawNKeys  key (n - 1)
-
-greenKey :: IO ()
-greenKey = do
-    currentColor $= Color4 0 1 0 1
-    vertex$Vertex3 (0::GLfloat) 0 0
-    vertex$Vertex3 (0.95::GLfloat) 0 0
-    currentColor $= Color4 1 1 1 1
-    vertex$Vertex3 (0.95::GLfloat) 4 0
-    vertex$Vertex3 (0::GLfloat) 4 0
-    currentColor $= Color4 1 1 1 1
-
-redKey :: IO ()
-redKey = do
-    currentColor $= Color4 1 0 0 1
-    vertex$Vertex3 (0::GLfloat) 0 0
-    vertex$Vertex3 (0.95::GLfloat) 0 0
-    currentColor $= Color4 1 1 1 1
-    vertex$Vertex3 (0.95::GLfloat) 4 0
-    vertex$Vertex3 (0::GLfloat) 4 0
-    currentColor $= Color4 1 1 1 1
-
-greenBlackKey :: IO ()
-greenBlackKey = do
-    currentColor $= Color4 0 1 0 1
-    vertex$Vertex3 (0::GLfloat) 1.5 0
-    vertex$Vertex3 (0.5::GLfloat) 1.5 0
-    currentColor $= Color4 1 1 1 1
-    vertex$Vertex3 (0.5::GLfloat) 3.95 0
-    vertex$Vertex3 (0::GLfloat) 3.95 0
-    currentColor $= Color4 1 1 1 1
-
-redBlackKey :: IO ()
-redBlackKey = do
-    currentColor $= Color4 1 0 0 1
-    vertex$Vertex3 (0::GLfloat) 1.5 0
-    vertex$Vertex3 (0.5::GLfloat) 1.5 0
-    currentColor $= Color4 1 1 1 1
-    vertex$Vertex3 (0.5::GLfloat) 3.95 0
-    vertex$Vertex3 (0::GLfloat) 3.95 0
-    currentColor $= Color4 1 1 1 1
-
-whiteKeyPoints :: [(GLfloat, GLfloat, GLfloat)]
-whiteKeyPoints = [(0,0,0), (0.95,0,0), (0.95,4,0), (0,4,0)]
-
-blackKeyPoints :: [(GLfloat, GLfloat, GLfloat)]
-blackKeyPoints = [(0.75, 1.5, 0), (1.25, 1.5 ,0), (1.25, 3.95, 0), (0.75, 3.95, 0)]
+isWhiteKey :: GLfloat -> Bool
+isWhiteKey    x       = x == fromInteger (round x)
