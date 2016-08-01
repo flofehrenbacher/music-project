@@ -1,4 +1,5 @@
-dist/*
+dist/
 *.o
 *.hi
-.cabal-sandbox/*
+.cabal-sandbox/
+*.exe
