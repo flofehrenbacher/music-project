@@ -6,8 +6,8 @@ import Euterpea.IO.MIDI.GeneralMidi
 import Euterpea.IO.MIDI.MidiIO
 import Euterpea
 
-getFirstDeviceID :: IO InputDeviceID
-getFirstDeviceID = do
+getFirstInputID :: IO InputDeviceID
+getFirstInputID = do
     (((deviceID,_):_) ,_) <- getAllDevices
     return deviceID
 
@@ -19,7 +19,7 @@ getFirstOutputID = do
 initDevices :: IO (InputDeviceID, OutputDeviceID)
 initDevices = do
     initializeMidi
-    inputID <- getFirstDeviceID
+    inputID <- getFirstInputID
     outputID <- getFirstOutputID
     return (inputID, outputID)
 
@@ -39,7 +39,6 @@ filterNoteOn    (NoteOn _ key _) = Just $ pitch key
 filterNoteOn    _                = Nothing
 
 -- modified version of donya quicks readMidi
-
 readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
 readMidi devsIn devsOut = do
     let f [] = Nothing

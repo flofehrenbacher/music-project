@@ -2,10 +2,11 @@
 module Main where
 
 import Idle
+import Display
+import Reshape
+import DisplayInfo
 import Modi
 import MouseEvents
-import DisplayInfo
-import View.Keyboard
 import SongCollection
 import MidiFun
 
@@ -19,21 +20,7 @@ main = do
     arguments <- setModusAndSong args
     startWithArguments arguments progName
 
-display :: IORef DisplayInfo -> Modus -> DisplayCallback
-display    displayInfoRef modus = do
-    clear [ColorBuffer]
-    loadIdentity
-    displayInfo <- readIORef displayInfoRef
-    preservingMatrix $ renderAllTogether displayInfo modus
-    swapBuffers
-    flush
-
-reshape :: ReshapeCallback
-reshape (Size width height) = do
-    viewport $= (Position ((width - 700) `div` 2)  ((height - 500) `div` 2), (Size 700 500))
-    postRedisplay Nothing
-
--- startWithArguments :: (Maybe Modus, Maybe Song) -> IO()
+startWithArguments :: (Maybe Modus, Maybe Song) -> String -> IO()
 startWithArguments    (Just myModus, Just song)  progName       = do
     initialDisplayMode $= [DoubleBuffered]
     initialWindowSize $= Size 700 500
