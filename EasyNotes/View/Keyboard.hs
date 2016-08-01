@@ -68,29 +68,6 @@ colourBlackKeyRed    _                  = return ()
 
 isInt :: GLfloat -> Bool
 isInt x = x == fromInteger (round x)
-    
-findPlaceFor :: PitchClass -> GLfloat
-findPlaceFor    C          =  0
-findPlaceFor    D          =  1
-findPlaceFor    E          =  2
-findPlaceFor    F          =  3
-findPlaceFor    G          =  4
-findPlaceFor    A          =  5
-findPlaceFor    B          =  6
-findPlaceFor    Cs         =  0.75
-findPlaceFor    Df         =  0.75
-findPlaceFor    Ds         =  1.75
-findPlaceFor    Ef         =  1.75
-findPlaceFor    Ff         =  2
-findPlaceFor    Es         =  3
-findPlaceFor    Fs         =  3.75
-findPlaceFor    Gf         =  3.75
-findPlaceFor    Gs         =  4.75
-findPlaceFor    Af         =  4.75
-findPlaceFor    As         =  5.75
-findPlaceFor    Bf         =  5.75
-findPlaceFor    Bs         =  0
-findPlaceFor    _          = 10 -- for the moment
 
 drawBlackKeys :: IO ()
 drawBlackKeys = do

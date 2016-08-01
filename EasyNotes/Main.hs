@@ -2,8 +2,7 @@
 module Main where
 
 import Euterpea
-import IORefs
-import UserInput
+import DisplayInfo
 import MidiFun
 import Modi
 import MouseEvents
@@ -51,7 +50,7 @@ startWithArguments    (Just myModus, Just song)  progName       = do
     initialDisplayMode $= [DoubleBuffered]
     initialWindowSize $= Size 700 500
     createWindow progName
-    (displayInfoRef, startTimeRef) <- setUpIORefs song
+    (displayInfoRef, startTimeRef) <- setUpDisplayInfo song
     (inputID, outputID) <- initDevices
     mouseCallback   $= Just (mouse displayInfoRef outputID)
     idleCallback    $= Just    (idle startTimeRef (inputID, outputID) displayInfoRef)
