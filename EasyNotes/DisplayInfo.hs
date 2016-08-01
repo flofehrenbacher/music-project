@@ -77,4 +77,4 @@ findPlaceFor    Af         =  4.75
 findPlaceFor    As         =  5.75
 findPlaceFor    Bf         =  5.75
 findPlaceFor    Bs         =  0
-findPlaceFor    _          = 10 -- for the moment
+findPlaceFor    _          =  10 -- for the moment

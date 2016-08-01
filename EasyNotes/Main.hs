@@ -1,19 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
-import Euterpea
-import DisplayInfo
-import MidiFun
+import Idle
 import Modi
 import MouseEvents
-import Time
 import DisplayInfo
-import View.Text
 import View.Keyboard
 import SongCollection
+import MidiFun
 
 import Data.IORef
-import Euterpea.IO.MIDI.MidiIO
 import Graphics.UI.GLUT
 import Text.Read
 
@@ -22,14 +18,6 @@ main = do
     (progName, args) <- getArgsAndInitialize
     arguments <- setModusAndSong args
     startWithArguments arguments progName
-
-idle ::  MyTime        -> (InputDeviceID,OutputDeviceID) -> IORef DisplayInfo -> IdleCallback
-idle     startTimeRef     (inputID, outputID)              displayInfoRef = do
-    difference <- computePassedTime startTimeRef
-    displayInfo <- readIORef displayInfoRef 
-    newDisplayInfo <- updateSongInfo (displayInfo {notePlace = placeNoteToBePlayed difference}) startTimeRef
-    displayInfoRef $= newDisplayInfo
-    postRedisplay Nothing
 
 display :: IORef DisplayInfo -> Modus -> DisplayCallback
 display    displayInfoRef modus = do
