@@ -1,0 +1,8 @@
+-- Auswahl an Liedern per Kommandozeile
+-- Modi
+-- Farbe ausfaden
+-- responsive design 
+-- Fokusrahmen
+-- events für tasten auf bildschirm
+-- Noten rendern (Bibliothek)
+-- Auswahl
