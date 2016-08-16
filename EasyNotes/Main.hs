@@ -3,7 +3,7 @@ module Main where
 
 import Idle
 import Display
-import Reshape
+import WindowSize
 import DisplayInfo
 import Modus
 import MouseEvents
