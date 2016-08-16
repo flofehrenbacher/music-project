@@ -9,7 +9,9 @@ import DisplayInfo
 
 import Graphics.Rendering.OpenGL
 
-
+-- | displays the keyboard according to the current displayInfo
+-- depends on if the last note that was played was the right one,
+-- what the next note is and what modus is chosen
 renderAllTogether :: DisplayInfo -> Modus -> IO ()
 renderAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
@@ -30,6 +32,7 @@ renderAllTogether    displayInfo    modus =  do
                 else return ()
             preservingMatrix $ drawLines
 
+-- | displays one octave of a keyboard
 renderKeyboard :: Maybe GLfloat -> Maybe GLfloat -> IO ()
 renderKeyboard    xRightNote       xWrongNote = do
     scale 0.2 0.2 (0::GLfloat)
