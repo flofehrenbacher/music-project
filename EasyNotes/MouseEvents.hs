@@ -7,7 +7,7 @@ import Data.IORef
 import Euterpea
 import Graphics.UI.GLUT
 
-mouse :: IORef DisplayInfo -> OutputDeviceID-> MouseCallback
+mouse :: IORef DisplayInfo -> OutputDeviceID -> MouseCallback
 mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 157 && realToFrac x < 193 && realToFrac y > 227 && realToFrac y < 350 = do
     sendPitchToSpeaker Cs displayInfoRef outputID
 mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 227 && realToFrac x < 263 && realToFrac y > 227 && realToFrac y < 350 = do
@@ -34,7 +34,7 @@ mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 52
     sendPitchToSpeaker B displayInfoRef outputID
 mouse displayInfoRef outputID LeftButton Up (Position x y) = do
     stopSpeakers outputID
-mouse _ _ _ _ = return ()
+mouse _ _ _ _ _ = return ()
 
 sendPitchToSpeaker :: PitchClass -> IORef DisplayInfo -> OutputDeviceID -> IO ()
 sendPitchToSpeaker    pc displayInfoRef outputID = do
