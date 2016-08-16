@@ -8,33 +8,33 @@ import Euterpea
 import Graphics.UI.GLUT
 
 mouse :: IORef DisplayInfo -> OutputDeviceID-> MouseCallback
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 158 && realToFrac x < 190 && realToFrac y > 228 && realToFrac y < 348 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 157 && realToFrac x < 193 && realToFrac y > 227 && realToFrac y < 350 = do
     sendPitchToSpeaker Cs displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 227 && realToFrac x < 262 && realToFrac y > 228 && realToFrac y < 348 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 227 && realToFrac x < 263 && realToFrac y > 227 && realToFrac y < 350 = do
     sendPitchToSpeaker Ds displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 367 && realToFrac x < 400 && realToFrac y > 228 && realToFrac y < 348 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 367 && realToFrac x < 403 && realToFrac y > 227 && realToFrac y < 350 = do
     sendPitchToSpeaker Fs displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 436 && realToFrac x < 472 && realToFrac y > 228 && realToFrac y < 348 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 437 && realToFrac x < 473 && realToFrac y > 227 && realToFrac y < 350 = do
     sendPitchToSpeaker Gs displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 507 && realToFrac x < 541 && realToFrac y > 228 && realToFrac y < 348 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 507 && realToFrac x < 543 && realToFrac y > 227 && realToFrac y < 350 = do
     sendPitchToSpeaker As displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 105 && realToFrac x < 170 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 105 && realToFrac x < 175 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker C displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 175 && realToFrac x < 240 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 175 && realToFrac x < 245 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker D displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 244 && realToFrac x < 310 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 245 && realToFrac x < 315 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker E displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 315 && realToFrac x < 381 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 315 && realToFrac x < 385 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker F displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 384 && realToFrac x < 451 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 385 && realToFrac x < 455 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker G displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 455 && realToFrac x < 520 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 455 && realToFrac x < 525 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker A displayInfoRef outputID
-mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 525 && realToFrac x < 590 && realToFrac y > 224 && realToFrac y < 424 = do
+mouse displayInfoRef outputID LeftButton Down (Position x y) | realToFrac x > 525 && realToFrac x < 595 && realToFrac y > 225 && realToFrac y < 425 = do
     sendPitchToSpeaker B displayInfoRef outputID
 mouse displayInfoRef outputID LeftButton Up (Position x y) = do
     stopSpeakers outputID
-mouse displayInfoRef _ _ _ _ = return ()
+mouse _ _ _ _ = return ()
 
 sendPitchToSpeaker :: PitchClass -> IORef DisplayInfo -> OutputDeviceID -> IO ()
 sendPitchToSpeaker    pc displayInfoRef outputID = do
