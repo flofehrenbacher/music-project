@@ -1,6 +1,7 @@
 module View.NoteLine where
 
 import Graphics.UI.GLUT
+import View.Clef
 
 helpingLine = do
     currentColor $= Color4 1 1 1 1
@@ -9,6 +10,8 @@ helpingLine = do
 
 drawLines :: IO ()
 drawLines = do
+    clef <- loadClef
+    drawClef clef
     currentColor $= Color4 1 1 1 1
     lineWidth $= 1
     translate$Vector3 (0::GLfloat) (1.25) 0
