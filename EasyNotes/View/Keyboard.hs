@@ -16,12 +16,12 @@ renderAllTogether :: DisplayInfo -> Modus -> IO ()
 renderAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let currentPitchClassPlayed = lastNote displayInfo
+    preservingMatrix drawLines
     case songInfo displayInfo of
         -- song ends
         Nothing -> do
             preservingMatrix $ showTextAboveKeyboard "Song finished!" 0.3
             preservingMatrix $ renderKeyboard Nothing Nothing
-            preservingMatrix drawLines
         -- song continues
         Just (noteToBePlayed, restNotes) -> do
             if modus /= Hard then preservingMatrix $ showTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
@@ -30,7 +30,6 @@ renderAllTogether    displayInfo    modus =  do
             preservingMatrix $ renderKeyboard (greenPlace displayInfo) (redPlace displayInfo)
             if modus == Easy then preservingMatrix $ labelKeys
                 else return ()
-            preservingMatrix $ drawLines
 
 -- | displays one octave of a keyboard
 renderKeyboard :: Maybe GLfloat -> Maybe GLfloat -> IO ()
