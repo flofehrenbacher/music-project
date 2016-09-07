@@ -9,8 +9,11 @@ import Modus
 import MouseEvents
 import SongCollection
 import MidiFun
+import View.Clef
 
 import Data.IORef
+import Control.Concurrent
+import Euterpea
 import Graphics.UI.GLUT
 import Text.Read
 
@@ -20,7 +23,7 @@ import Text.Read
 main :: IO ()
 main = do
     (progName, args) <- getArgsAndInitialize
-    (modus, song) <- setModusAndSong args
+    (modus, song)    <- setModusAndSong args
     case (modus, song) of
         (Just modus', Just song') -> startSong (modus',song') progName
         (_          , _         ) ->  do
@@ -35,13 +38,24 @@ startSong    (modus,song)                     progName  =  do
     initialDisplayMode $= [DoubleBuffered]
     initialWindowSize  $= Size 700 500
     createWindow progName
-    (displayInfoRef, startTimeRef) <- setUpDisplayInfo song
     (inputID, outputID) <- initDevices
+    jingle outputID
+    clef <- loadClef
+    (displayInfoRef, startTimeRef) <- setUpDisplayInfo song
     mouseCallback   $= Just (mouse displayInfoRef outputID)
     idleCallback    $= Just (idle startTimeRef (inputID, outputID) displayInfoRef)
-    displayCallback $= display displayInfoRef modus
+    displayCallback $= display displayInfoRef modus clef
     reshapeCallback $= Just reshape
     mainLoop
+
+-- | plays a short jingle
+jingle :: OutputDeviceID -> IO ()
+jingle outputID = do
+    sendMidiToSpeakers C outputID
+    threadDelay 500000
+    sendMidiToSpeakers E outputID
+    threadDelay 500000
+    stopSpeakers outputID
 
 -- | checks if only two arguments were delivered
 setModusAndSong :: [String]    -> IO (Maybe Modus, Maybe Song)
