@@ -36,8 +36,9 @@ mouse displayInfoRef outputID LeftButton Up (Position x y) = do
     stopSpeakers outputID
 mouse _ _ _ _ _ = return ()
 
+
 sendPitchToSpeaker :: PitchClass -> IORef DisplayInfo -> OutputDeviceID -> IO ()
-sendPitchToSpeaker    pc displayInfoRef outputID = do
+sendPitchToSpeaker    pc            displayInfoRef       outputID       = do
     displayInfo <- readIORef displayInfoRef
     let newDisplayInfo = displayInfo {lastNote = Just pc}
     sendMidiToSpeakers pc outputID
