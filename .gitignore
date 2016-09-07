@@ -1,6 +1,6 @@
-dist/*
-*.o
-*.hi
-.cabal-sandbox/*
-*.exe
-*.ini
+dist/
+.o
+.hi
+.cabal-sandbox/
+.exe
+.ini
