@@ -12,36 +12,41 @@ import Graphics.Rendering.OpenGL
 -- | displays the keyboard according to the current displayInfo
 -- depends on if the last note that was played was the right one,
 -- what the next note is and what modus is chosen
-renderAllTogether :: DisplayInfo -> Modus -> IO ()
-renderAllTogether    displayInfo    modus =  do
+renderAllTogether :: DisplayInfo -> Modus -> TextureObject -> IO ()
+renderAllTogether    displayInfo    modus    clef          =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let currentPitchClassPlayed = lastNote displayInfo
-    preservingMatrix drawLines
+    let isKeyCurrentPressed = isKeyPressed displayInfo
+    preservingMatrix $ drawLines clef
     case songInfo displayInfo of
         -- song ends
         Nothing -> do
             preservingMatrix $ showTextAboveKeyboard "Song finished!" 0.3
-            preservingMatrix $ renderKeyboard Nothing Nothing
+            preservingMatrix $ renderKeyboard Nothing Nothing False
         -- song continues
         Just (noteToBePlayed, restNotes) -> do
             if modus /= Hard then preservingMatrix $ showTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
             preservingMatrix $ showNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
-            preservingMatrix $ renderKeyboard (greenPlace displayInfo) (redPlace displayInfo)
+            preservingMatrix $ renderKeyboard (greenPlace displayInfo) (redPlace displayInfo) isKeyCurrentPressed
             if modus == Easy then preservingMatrix $ labelKeys
                 else return ()
 
 -- | displays one octave of a keyboard
-renderKeyboard :: Maybe GLfloat -> Maybe GLfloat -> IO ()
-renderKeyboard    xRightNote       xWrongNote = do
+renderKeyboard :: Maybe GLfloat -> Maybe GLfloat -> Bool -> IO ()
+renderKeyboard    xRightNote       xWrongNote       isKeyCurrentPressed = do
     scale 0.2 0.2 (0::GLfloat)
     renderAs Quads whiteKeyPoints
     preservingMatrix $ drawNKeys nextWhiteKey 6
-    colourWhiteKeyGreen xRightNote
-    colourWhiteKeyRed xWrongNote
+    if isKeyCurrentPressed == True then do
+        colourWhiteKeyGreen xRightNote
+        colourWhiteKeyRed xWrongNote
+        else return ()
     drawBlackKeys
-    colourBlackKeyGreen xRightNote
-    colourBlackKeyRed xWrongNote
+    if isKeyCurrentPressed == True then do
+        colourBlackKeyGreen xRightNote
+        colourBlackKeyRed xWrongNote
+        else return ()
 
 colourWhiteKeyGreen :: Maybe GLfloat -> IO ()
 colourWhiteKeyGreen   (Just fl) | isWhiteKey fl = preservingMatrix $ do

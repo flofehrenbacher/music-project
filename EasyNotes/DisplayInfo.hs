@@ -14,30 +14,32 @@ type LastNote = Maybe PitchClass
 type SongInfo = Maybe (PitchClass, [Music Pitch])
 type NotePlace = GLfloat
 type MyTime = IORef UTCTime
-data DisplayInfo = DisplayInfo {greenPlace :: GreenPlace, redPlace :: RedPlace, songInfo :: SongInfo, lastNote :: LastNote, notePlace :: NotePlace}
+data DisplayInfo = DisplayInfo {greenPlace :: GreenPlace, redPlace :: RedPlace, isKeyPressed :: Bool, songInfo :: SongInfo, lastNote :: LastNote, notePlace :: NotePlace}
     deriving (Eq,Show)
 
 setUpDisplayInfo :: Song -> IO (IORef DisplayInfo, IORef UTCTime)
 setUpDisplayInfo    song = do
-    displayInfoRef <- newIORef $ DisplayInfo {greenPlace = Nothing, redPlace = Nothing, songInfo = getRestInfo song, lastNote = Nothing, notePlace = 1.4}
-    curTime <- getCurrentTime
-    startTimeRef <- newIORef curTime
+    displayInfoRef <- newIORef $ DisplayInfo {greenPlace = Nothing, redPlace = Nothing, isKeyPressed = False, songInfo = getRestInfo song, lastNote = Nothing, notePlace = 1.4}
+    curTime        <- getCurrentTime
+    startTimeRef   <- newIORef curTime
     return (displayInfoRef,startTimeRef)
 
-isAbsPitchTheSame :: Maybe PitchClass -> Maybe PitchClass -> Bool
-isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)      | pcToInt pcOne == pcToInt pcTwo = True
-                                                           | otherwise = False
-isAbsPitchTheSame   _                   _                 = False
+isAbsPitchTheSame :: Maybe PitchClass -> Maybe PitchClass                                   -> Bool
+isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)       | pcToInt pcOne == pcToInt pcTwo = True
+                                                           | otherwise                      = False
+isAbsPitchTheSame   _                   _                                                   = False
 
-getRestInfo :: [Music Pitch] -> Maybe (PitchClass, [Music Pitch])
-getRestInfo    []            = Nothing
-getRestInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) = (Just (pitchClass, notes))
-getRestInfo    ((Prim (Rest _)) : notes) = getRestInfo notes
-getRestInfo    _            =  Nothing
+-- TODO nicht restInfo und nicht get
+getRestInfo :: [Music Pitch]                              -> Maybe (PitchClass, [Music Pitch])
+getRestInfo    []                                         =  Nothing
+getRestInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) =  (Just (pitchClass, notes))
+getRestInfo    ((Prim (Rest _)) : notes)                  =  getRestInfo notes
+getRestInfo    _                                          =  Nothing
 
-updateSongInfo :: DisplayInfo ->       IORef UTCTime -> IO (DisplayInfo)
-updateSongInfo    displayInfo _  | songInfo displayInfo == Nothing = return displayInfo
-updateSongInfo    displayInfo startTimeRef  = do
+-- besser strukturieren / seperieren mit maybe / time
+updateSongInfo :: DisplayInfo ->  IORef UTCTime                                    -> IO (DisplayInfo)
+updateSongInfo    displayInfo     _              | songInfo displayInfo == Nothing = return displayInfo
+updateSongInfo    displayInfo     startTimeRef                                     = do
             let noteToBePlayed = (fmap fst (songInfo displayInfo))
             let restNotes = (fmap snd (songInfo displayInfo))
             -- RIGHT NOTE WAS PLAYED
