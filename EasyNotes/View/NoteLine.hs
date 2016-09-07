@@ -8,9 +8,8 @@ helpingLine = do
     lineWidth $= 1
     renderPrimitive Lines help
 
-drawLines :: IO ()
-drawLines = do
-    clef <- loadClef
+drawLines :: TextureObject -> IO ()
+drawLines clef = do
     drawClef clef
     currentColor $= Color4 1 1 1 1
     lineWidth $= 1

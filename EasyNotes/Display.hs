@@ -6,11 +6,11 @@ import Modus
 import Data.IORef
 import View.Keyboard
 
-display :: IORef DisplayInfo -> Modus -> DisplayCallback
-display    displayInfoRef modus = do
+display :: IORef DisplayInfo -> Modus -> TextureObject -> DisplayCallback
+display    displayInfoRef modus clef = do
     clear [ColorBuffer]
     loadIdentity
     displayInfo <- readIORef displayInfoRef
-    preservingMatrix $ renderAllTogether displayInfo modus
+    preservingMatrix $ renderAllTogether displayInfo modus clef
     swapBuffers
     flush

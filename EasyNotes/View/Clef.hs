@@ -8,6 +8,7 @@ drawClef :: TextureObject -> IO ()
 drawClef    clef          = do
     textureBinding Texture2D $= Just clef
     textureFilter Texture2D  $= ((Linear', Nothing), Linear')
+    texture2DWrap $= (Mirrored, ClampToEdge)
     textureFunction          $= Replace
     renderPrimitive Quads $ do
         forM_ [(0,0),(0,1),(1,1),(1,0)] $ \(x,y) -> do
@@ -16,7 +17,7 @@ drawClef    clef          = do
 
 loadClef :: IO TextureObject
 loadClef = do
-    eclef <- readTexture "EasyNotes/View/Clef.png"
+    eclef <- readTexture "EasyNotes/View/orange.png"
     case eclef of
         Left message -> error $ "Clef.png does not exist. Message: " ++ message
         Right clef -> return clef
