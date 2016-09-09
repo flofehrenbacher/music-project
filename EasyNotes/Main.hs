@@ -2,6 +2,7 @@
 module Main where
 
 import Idle
+import Jingle
 import Display
 import WindowSize
 import DisplayInfo
@@ -9,10 +10,8 @@ import Modus
 import MouseEvents
 import SongCollection
 import MidiFun
-import View.Clef
 
 import Data.IORef
-import Control.Concurrent
 import Euterpea
 import Graphics.UI.GLUT
 import Text.Read
@@ -40,22 +39,12 @@ startSong    (modus,song)                     progName  =  do
     createWindow progName
     (inputID, outputID) <- initDevices
     jingle outputID
-    clef <- loadClef
     (displayInfoRef, startTimeRef) <- setUpDisplayInfo song
     mouseCallback   $= Just (mouse displayInfoRef outputID)
     idleCallback    $= Just (idle startTimeRef (inputID, outputID) displayInfoRef)
-    displayCallback $= display displayInfoRef modus clef
+    displayCallback $= display displayInfoRef modus
     reshapeCallback $= Just reshape
     mainLoop
-
--- | plays a short jingle
-jingle :: OutputDeviceID -> IO ()
-jingle outputID = do
-    sendMidiToSpeakers C outputID
-    threadDelay 500000
-    sendMidiToSpeakers E outputID
-    threadDelay 500000
-    stopSpeakers outputID
 
 -- | checks if only two arguments were delivered
 setModusAndSong :: [String]    -> IO (Maybe Modus, Maybe Song)
