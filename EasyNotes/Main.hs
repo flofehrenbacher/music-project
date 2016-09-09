@@ -39,7 +39,7 @@ startSong    (modus,song)                     progName  =  do
     createWindow progName
     (inputID, outputID) <- initDevices
     jingle outputID
-    (displayInfoRef, startTimeRef) <- setUpDisplayInfo song
+    (displayInfoRef, startTimeRef) <- initializeDisplayInfo song
     mouseCallback   $= Just (mouse displayInfoRef outputID)
     idleCallback    $= Just (idle startTimeRef (inputID, outputID) displayInfoRef)
     displayCallback $= display displayInfoRef modus
