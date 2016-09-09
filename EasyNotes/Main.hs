@@ -1,15 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Main where
 
+import Display
+import DisplayInfo
 import Idle
 import Jingle
-import Display
-import WindowSize
-import DisplayInfo
 import Modus
 import MouseEvents
-import SongCollection
 import MidiFun
+import SongCollection
+import WindowSize
 
 import Data.IORef
 import Euterpea
@@ -47,6 +47,7 @@ startSong    (modus,song)                     progName  =  do
     mainLoop
 
 -- | checks if only two arguments were delivered
+-- and returns them
 setModusAndSong :: [String]    -> IO (Maybe Modus, Maybe Song)
 setModusAndSong    (myModus : song : []) = do
     return $ (readMaybe myModus, lookup song songCollection)
