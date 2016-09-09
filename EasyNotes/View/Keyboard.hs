@@ -12,12 +12,12 @@ import Graphics.Rendering.OpenGL
 -- | displays the keyboard according to the current displayInfo
 -- depends on if the last note that was played was the right one,
 -- what the next note is and what modus is chosen
-renderAllTogether :: DisplayInfo -> Modus -> TextureObject -> IO ()
-renderAllTogether    displayInfo    modus    clef          =  do
+renderAllTogether :: DisplayInfo -> Modus -> IO ()
+renderAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let currentPitchClassPlayed = lastNote displayInfo
     let isKeyCurrentPressed = isKeyPressed displayInfo
-    preservingMatrix $ drawLines clef
+    preservingMatrix $ drawLines
     case songInfo displayInfo of
         -- song ends
         Nothing -> do

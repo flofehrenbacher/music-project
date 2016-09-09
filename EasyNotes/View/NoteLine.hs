@@ -1,16 +1,14 @@
 module View.NoteLine where
 
 import Graphics.UI.GLUT
-import View.Clef
 
 helpingLine = do
     currentColor $= Color4 1 1 1 1
     lineWidth $= 1
     renderPrimitive Lines help
 
-drawLines :: TextureObject -> IO ()
-drawLines clef = do
-    drawClef clef
+drawLines :: IO ()
+drawLines = do
     currentColor $= Color4 1 1 1 1
     lineWidth $= 1
     translate$Vector3 (0::GLfloat) (1.25) 0
