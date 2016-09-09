@@ -1,5 +1,6 @@
 module View.Keyboard where
 
+import View.Clef
 import View.Fun
 import View.Text
 import Modus
@@ -18,6 +19,7 @@ renderAllTogether    displayInfo    modus =  do
     let currentPitchClassPlayed = lastNote displayInfo
     let isKeyCurrentPressed = isKeyPressed displayInfo
     preservingMatrix $ drawLines
+    preservingMatrix $ drawClef
     case songInfo displayInfo of
         -- song ends
         Nothing -> do
