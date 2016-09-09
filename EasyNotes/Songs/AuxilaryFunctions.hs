@@ -15,3 +15,9 @@ addDur    dur    notes            =  line (map (\f -> f dur) notes)
 graceNote :: Int -> Music Pitch        -> Music Pitch
 graceNote     n     (Prim (Note dur p)) = note (dur/8) (trans n p) :+: note (7*dur/8) p
 graceNote     n     _                   = error "graceNode only available for single note."
+
+isAbsPitchTheSame :: Maybe PitchClass -> Maybe PitchClass                                   -> Bool
+isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)       | pcToInt pcOne == pcToInt pcTwo = True
+                                                           | otherwise                      = False
+isAbsPitchTheSame   _                   _                                                   = False
+
