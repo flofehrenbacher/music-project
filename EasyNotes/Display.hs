@@ -6,6 +6,7 @@ import Modus
 import Data.IORef
 import View.Keyboard
 
+-- | does essential steps for rendering the window: clear, load identity, rendering, swap buffer and flush
 display :: IORef DisplayInfo -> Modus -> DisplayCallback
 display    displayInfoRef modus = do
     clear [ColorBuffer]
