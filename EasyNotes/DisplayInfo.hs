@@ -1,11 +1,13 @@
 module DisplayInfo where
 
-import Euterpea
 import Data.IORef
-import Graphics.UI.GLUT
 import Data.Time.Clock
+import Euterpea
+import Graphics.UI.GLUT
 
 import SongCollection
+import Songs.AuxilaryFunctions
+import Time
 import View.Text
 
 data DisplayInfo = DisplayInfo {greenPlace :: Maybe GLfloat,
@@ -21,36 +23,33 @@ initializeDisplayInfo    song = do
     displayInfoRef <- newIORef $ DisplayInfo {greenPlace = Nothing,
                                               redPlace = Nothing,
                                               isKeyPressed = False,
-                                              songInfo = getRestInfo song,
+                                              songInfo = updateSongInfo song,
                                               lastNote = Nothing,
                                               notePlace = 1.4}
     curTime        <- getCurrentTime
     startTimeRef   <- newIORef curTime
     return (displayInfoRef,startTimeRef)
 
-isAbsPitchTheSame :: Maybe PitchClass -> Maybe PitchClass                                   -> Bool
-isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)       | pcToInt pcOne == pcToInt pcTwo = True
-                                                           | otherwise                      = False
-isAbsPitchTheSame   _                   _                                                   = False
-
 -- TODO nicht restInfo und nicht get
-getRestInfo :: [Music Pitch]                              -> Maybe (PitchClass, [Music Pitch])
-getRestInfo    []                                         =  Nothing
-getRestInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) =  (Just (pitchClass, notes))
-getRestInfo    ((Prim (Rest _)) : notes)                  =  getRestInfo notes
-getRestInfo    _                                          =  Nothing
+updateSongInfo :: [Music Pitch]                              -> Maybe (PitchClass, [Music Pitch])
+updateSongInfo    []                                         =  Nothing
+updateSongInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) =  (Just (pitchClass, notes))
+updateSongInfo    ((Prim (Rest _)) : notes)                  =  updateSongInfo notes
+updateSongInfo    _                                          =  Nothing
 
 -- besser strukturieren / seperieren mit maybe / time
-updateSongInfo :: DisplayInfo ->  IORef UTCTime                                    -> IO (DisplayInfo)
-updateSongInfo    displayInfo     _              | songInfo displayInfo == Nothing = return displayInfo
-updateSongInfo    displayInfo     startTimeRef                                     = do
-            let noteToBePlayed = (fmap fst (songInfo displayInfo))
-            let restNotes = (fmap snd (songInfo displayInfo))
+updateDisplayInfo :: DisplayInfo ->  IORef UTCTime                                    -> IO (DisplayInfo)
+updateDisplayInfo    displayInfo     _              | songInfo displayInfo == Nothing = return displayInfo
+updateDisplayInfo    displayInfo     startTimeRef                                     = do
+            let nextNote = (fmap fst (songInfo displayInfo))
+            let remainingNotes = (fmap snd (songInfo displayInfo))
             -- RIGHT NOTE WAS PLAYED
-            if isAbsPitchTheSame noteToBePlayed (lastNote displayInfo) then do
-                let newDisplayInfo = displayInfo {greenPlace = findPlaceFor <$> noteToBePlayed, redPlace = Nothing, songInfo = getRestInfo =<< restNotes, lastNote = Nothing}
-                curTime <- getCurrentTime
-                startTimeRef $= curTime
+            if isAbsPitchTheSame nextNote (lastNote displayInfo) then do
+                let newDisplayInfo = displayInfo {greenPlace = findPlaceFor <$> nextNote, 
+                                                  redPlace = Nothing,
+                                                  songInfo = updateSongInfo =<< remainingNotes,
+                                                  lastNote = Nothing}
+                resetTime startTimeRef
                 return newDisplayInfo
             -- WRONG NOTE WAS PLAYED
             else do

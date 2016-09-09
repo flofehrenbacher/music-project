@@ -14,6 +14,6 @@ idle ::  IORef UTCTime -> (InputDeviceID,OutputDeviceID) -> IORef DisplayInfo ->
 idle     startTimeRef     (inputID, outputID)              displayInfoRef = do
     difference <- computePassedTime startTimeRef
     displayInfo <- readIORef displayInfoRef 
-    newDisplayInfo <- updateSongInfo (displayInfo {notePlace = placeNoteToBePlayed difference}) startTimeRef
+    newDisplayInfo <- updateDisplayInfo (displayInfo {notePlace = placeNoteToBePlayed difference}) startTimeRef
     displayInfoRef $= newDisplayInfo
     postRedisplay Nothing
