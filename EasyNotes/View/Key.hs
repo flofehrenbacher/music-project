@@ -1,7 +1,11 @@
 module View.Key where
 
+import Euterpea
 import View.Fun
 import Graphics.UI.GLUT
+
+isWhiteKey :: PitchClass       -> Bool
+isWhiteKey    pitchClass       =  length (show pitchClass) == 1
 
 drawBlackKeys :: IO ()
 drawBlackKeys = do
