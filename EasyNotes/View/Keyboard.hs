@@ -1,5 +1,7 @@
 module View.Keyboard where
 
+import Euterpea
+
 import View.Clef
 import View.Fun
 import View.Text
@@ -17,62 +19,54 @@ renderAllTogether :: DisplayInfo -> Modus -> IO ()
 renderAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let currentPitchClassPlayed = lastNote displayInfo
-    let isKeyCurrentPressed = isKeyPressed displayInfo
+    let isKeyCurrentPressed = isKeyPressed displayInfo || isMidiKeyPressed displayInfo
     preservingMatrix $ drawLines
     preservingMatrix $ drawClef
     case songInfo displayInfo of
         -- song ends
         Nothing -> do
             preservingMatrix $ showTextAboveKeyboard "Song finished!" 0.3
-            preservingMatrix $ renderKeyboard Nothing Nothing False
+            preservingMatrix $ renderKeyboard Nothing False False
         -- song continues
         Just (noteToBePlayed, restNotes) -> do
             if modus /= Hard then preservingMatrix $ showTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
             preservingMatrix $ showNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
-            preservingMatrix $ renderKeyboard (greenPlace displayInfo) (redPlace displayInfo) isKeyCurrentPressed
+            preservingMatrix $ renderKeyboard currentPitchClassPlayed (isRightNotePlayed displayInfo) isKeyCurrentPressed
             if modus == Easy then preservingMatrix $ labelKeys
                 else return ()
 
 -- | displays one octave of a keyboard
-renderKeyboard :: Maybe GLfloat -> Maybe GLfloat -> Bool -> IO ()
-renderKeyboard    xRightNote       xWrongNote       isKeyCurrentPressed = do
+renderKeyboard :: Maybe PitchClass     -> Bool           -> Bool   -> IO ()
+renderKeyboard    currentPitchClassPlayed _                 False  = do
     scale 0.2 0.2 (0::GLfloat)
     renderAs Quads whiteKeyPoints
     preservingMatrix $ drawNKeys nextWhiteKey 6
-    if isKeyCurrentPressed == True then do
-        colourWhiteKeyGreen xRightNote
-        colourWhiteKeyRed xWrongNote
+    drawBlackKeys
+renderKeyboard    currentPitchClassPlayed isRightNotePlayed True   = do
+    scale 0.2 0.2 (0::GLfloat)
+    renderAs Quads whiteKeyPoints
+    preservingMatrix $ drawNKeys nextWhiteKey 6
+    let white = fmap isWhiteKey currentPitchClassPlayed
+    if  white == Just True then do
+        displayPressedKey isRightNotePlayed currentPitchClassPlayed True
         else return ()
     drawBlackKeys
-    if isKeyCurrentPressed == True then do
-        colourBlackKeyGreen xRightNote
-        colourBlackKeyRed xWrongNote
+    if white == Just False then do
+        displayPressedKey isRightNotePlayed currentPitchClassPlayed False
         else return ()
-
-colourWhiteKeyGreen :: Maybe GLfloat -> IO ()
-colourWhiteKeyGreen   (Just fl) | isWhiteKey fl = preservingMatrix $ do
-    translate$Vector3 (fl::GLfloat) 0 0
+    
+displayPressedKey :: Bool -> Maybe PitchClass  -> Bool -> IO ()
+displayPressedKey    True   (Just  pitchClass)    True = preservingMatrix $ do
+    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
     renderPrimitive Quads greenKey
-colourWhiteKeyGreen    _                  = return ()
-
-colourWhiteKeyRed :: Maybe GLfloat -> IO ()
-colourWhiteKeyRed   (Just fl) | isWhiteKey fl = preservingMatrix $ do
-    translate$Vector3 (fl::GLfloat) 0 0
+displayPressedKey    False  (Just  pitchClass)    True = preservingMatrix $ do
+    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
     renderPrimitive Quads redKey
-colourWhiteKeyRed    _                  = return ()
-
-colourBlackKeyGreen :: Maybe GLfloat -> IO ()
-colourBlackKeyGreen   (Just fl) | isWhiteKey fl == False = preservingMatrix $ do
-    translate$Vector3 (fl::GLfloat) 0 0
+displayPressedKey    True   (Just  pitchClass)    False = preservingMatrix $ do
+    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
     renderPrimitive Quads greenBlackKey
-colourBlackKeyGreen    _                  = return ()
-
-colourBlackKeyRed :: Maybe GLfloat -> IO ()
-colourBlackKeyRed   (Just fl) | isWhiteKey fl == False = preservingMatrix $ do
-    translate$Vector3 (fl::GLfloat) 0 0
+displayPressedKey    False   (Just  pitchClass)   False = preservingMatrix $ do
+    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
     renderPrimitive Quads redBlackKey
-colourBlackKeyRed    _                  = return ()
-
-isWhiteKey :: GLfloat -> Bool
-isWhiteKey    x       = x == fromInteger (round x)
+displayPressedKey    _       _                    _   = return ()

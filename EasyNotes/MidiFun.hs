@@ -1,15 +1,17 @@
 module MidiFun where
 
+import DisplayInfo
+
 import Euterpea.IO.MIDI.MidiIO
 import Euterpea
 
--- | returns the first midi input device
+-- | returns the first found midi input device
 getFirstInputID :: IO InputDeviceID
 getFirstInputID = do
     (((deviceID,_):_) ,_) <- getAllDevices
     return deviceID
 
--- | returns the last midi output device
+-- | returns the first found midi output device
 getFirstOutputID :: IO OutputDeviceID
 getFirstOutputID = do
     (_ ,((deviceID,_):_)) <- getAllDevices
@@ -40,6 +42,15 @@ midiToPitchClass (Just (_,(message : _))) = do
         Nothing         -> return Nothing
 midiToPitchClass _ = return Nothing
 
+updateIsMidiKeyPressed :: (Maybe (Time,[Message])) -> DisplayInfo -> IO DisplayInfo
+updateIsMidiKeyPressed currentMsg displayInfo = do
+    case currentMsg of
+        Just (_,((NoteOn _ _ _) : _)) -> do
+            return $ displayInfo {isMidiKeyPressed = True}
+        Just (_,((ControlChange _ _ _) : _)) -> do
+            return $ displayInfo {isMidiKeyPressed = False}
+        Nothing -> return displayInfo
+
 -- | checks if midi message corresponds to a note
 -- and returns its pitch if it is a note
 -- otherwise returns Nothing
@@ -47,7 +58,19 @@ filterNoteOn :: Message -> Maybe Pitch
 filterNoteOn    (NoteOn _ key _) = Just $ pitch key
 filterNoteOn    _                = Nothing
 
+readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
+readMidi devsIn devsOut = do
+    let f [] = Nothing
+        f xs = Just $ map (\m -> (0, Std $ m)) xs
+        g Nothing = []
+        g (Just (t,ms)) = ms
+    msgs <- sequence $ map pollMidi devsIn -- get MIDI messages coming
+    let actual = head msgs
+    let outVal = f $ concatMap g msgs
+    sequence $ map (\d -> sendMidiOut d outVal) devsOut
+    return actual
+
 -- | sends a midi event to the specified outputDevice
 sendMidiOut :: OutputDeviceID -> Maybe [(Time, MidiMessage)] -> IO ()
-sendMidiOut dev ms = outputMidi dev >> 
+sendMidiOut dev ms = outputMidi dev >>
     maybe (return ()) (mapM_ (\(t,m) -> deliverMidiEvent dev (0, m))) ms
