@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module View.Text where
 
 import View.NoteLine
@@ -17,7 +18,7 @@ placeNoteToBePlayed :: NominalDiffTime -> XCoordinate
 placeNoteToBePlayed difference = let x =  1.4 - (realToFrac (difference) / 4) in
     if x > haltingPosition then x else haltingPosition
 
-showNoteAboveKeyboard :: (Note,NoteHeight) -> XCoordinate -> IO()
+showNoteAboveKeyboard :: (String,GLfloat) -> XCoordinate -> IO()
 showNoteAboveKeyboard    (noteName,height)   x = do
         translate$Vector3 (x + 0.02::GLfloat) 0 0
         if height < 0 then preservingMatrix helpingLine else return ()
@@ -27,7 +28,7 @@ showNoteAboveKeyboard    (noteName,height)   x = do
         scale 0.0007 0.00065 (0::GLfloat)
         showNote noteName
 
-showTextAboveKeyboard :: Note -> XCoordinate -> IO()
+showTextAboveKeyboard :: String -> XCoordinate -> IO()
 showTextAboveKeyboard    text x = do
         translate$Vector3 (x::GLfloat) 0.95 0
         currentColor $= Color4 1 1 1 1
@@ -48,40 +49,35 @@ labelKeys = do
     nextLabel "G"
     nextLabel "A"
     nextLabel "B"
-    
-nextLabel :: Note -> IO ()
+
+nextLabel :: String -> IO ()
 nextLabel    label  = do
     translate$Vector3 (115::GLfloat) 0 0
     renderString Roman label
 
 showNote :: String -> IO()
-showNote    noteName | takeEnd 1 (pack noteName) == pack "s" = renderString Roman "#o" 
+showNote    noteName | takeEnd 1 (pack noteName) == pack "s" = renderString Roman "#o"
 showNote    noteName | takeEnd 1 (pack noteName) == pack "b" = renderString Roman "bo"
 showNote    noteName | otherwise = renderString Roman "o"
 
-type Note = String
-type NoteHeight = GLfloat
+pitchInformation :: PitchClass -> (String, GLfloat)
+pitchInformation    pitchClass =  (show pitchClass, heightOf pitchClass)
 
-pitchInformation :: PitchClass -> (Note,NoteHeight)
-pitchInformation    C          =  ("C", (-0.05))
-pitchInformation    Cs         =  ("Cs", (-0.05))
-pitchInformation    Cf         =  ("Cb", (-0.05))
-pitchInformation    D          =  ("D", (-0.025))
-pitchInformation    Ds         =  ("Ds", (-0.025))
-pitchInformation    Df         =  ("Db", (-0.025))
-pitchInformation    E          =  ("E", 0)
-pitchInformation    Es         =  ("Es", 0)
-pitchInformation    Ef         =  ("Eb", 0)
-pitchInformation    F          =  ("F", 0.025)
-pitchInformation    Fs         =  ("Fs", 0.025)
-pitchInformation    Ff         =  ("Fb", 0.025)
-pitchInformation    G          =  ("G", 0.05)
-pitchInformation    Gs         =  ("Gs", 0.05)
-pitchInformation    Gf         =  ("Gb", 0.05)
-pitchInformation    A          =  ("A", 0.075)
-pitchInformation    As         =  ("As", 0.075)
-pitchInformation    Af         =  ("Ab", 0.075)
-pitchInformation    B          =  ("B", 0.1)
-pitchInformation    Bs         =  ("Bs", 0.1)
-pitchInformation    Bf         =  ("Bb", 0.1)
-pitchInformation    _          =  ("unbekannt", (-0.1))
+heightOf :: PitchClass -> GLfloat
+heightOf pitchClass = initialHeight + (0.025 * (heightMainNotes (takeMainPitchClass pitchClass)))
+    where initialHeight = -0.05
+
+heightMainNotes :: PitchClass -> GLfloat
+heightMainNotes    C          =  0
+heightMainNotes    D          =  1
+heightMainNotes    E          =  2
+heightMainNotes    F          =  3
+heightMainNotes    G          =  4
+heightMainNotes    A          =  5
+heightMainNotes    B          =  6
+
+takeMainPitchClass :: PitchClass -> PitchClass
+takeMainPitchClass    pitchClass = read $ charToString $ Prelude.head $ show pitchClass
+
+charToString :: Char -> String
+charToString = (:[])
