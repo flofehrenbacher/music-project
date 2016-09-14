@@ -12,38 +12,42 @@ import DisplayInfo
 
 import Graphics.Rendering.OpenGL
 
+xCoordCs = 0.75
+xCoordFs = 3.75
+
 -- | displays the keyboard according to the current displayInfo
 -- depends on if the last note that was played was the right one,
--- what the next note is and what modus is chosen
-renderAllTogether :: DisplayInfo -> Modus -> IO ()
-renderAllTogether    displayInfo    modus =  do
+-- on which the next note is and on which modus is chosen
+displayAllTogether :: DisplayInfo -> Modus -> IO ()
+displayAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
-    let currentPitchClassPlayed = lastNote displayInfo
     let isKeyCurrentPressed = isKeyPressed displayInfo || isMidiKeyPressed displayInfo
     preservingMatrix $ drawLines
     preservingMatrix $ drawClef
     case songInfo displayInfo of
-        -- song ends
+        -- SONG FINISHED
         Nothing -> do
-            preservingMatrix $ showTextAboveKeyboard "Song finished!" 0.3
-            preservingMatrix $ renderKeyboard Nothing False False
-        -- song continues
+            preservingMatrix $ displayTextAboveKeyboard "Song finished!" 0.3
+            preservingMatrix $ displayKeyboard Nothing False False
+        -- SONG CONTINUES
         Just (noteToBePlayed, restNotes) -> do
-            if modus /= Hard then preservingMatrix $ showTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
+            if modus /= Hard then preservingMatrix $ displayTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
-            preservingMatrix $ showNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
-            preservingMatrix $ renderKeyboard currentPitchClassPlayed (isRightNotePlayed displayInfo) isKeyCurrentPressed
+            preservingMatrix $ displayNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
+            preservingMatrix $ displayKeyboard (lastNote displayInfo) (isRightNotePlayed displayInfo) isKeyCurrentPressed
             if modus == Easy then preservingMatrix $ labelKeys
                 else return ()
 
--- | displays one octave of a keyboard
-renderKeyboard :: Maybe PitchClass     -> Bool           -> Bool   -> IO ()
-renderKeyboard    currentPitchClassPlayed _                 False  = do
+-- | displays one octave of a keyboard including the possibly currently played key
+displayKeyboard :: Maybe PitchClass     -> Bool           -> Bool   -> IO ()
+displayKeyboard    currentPitchClassPlayed _                 False  = do
+    -- NO KEY PLAYED AT THE MOMENT
     scale 0.2 0.2 (0::GLfloat)
     renderAs Quads whiteKeyPoints
     preservingMatrix $ drawNKeys nextWhiteKey 6
     drawBlackKeys
-renderKeyboard    currentPitchClassPlayed isRightNotePlayed True   = do
+displayKeyboard    currentPitchClassPlayed isRightNotePlayed True   = do
+    -- KEY PLAYED AT THE MOMENT
     scale 0.2 0.2 (0::GLfloat)
     renderAs Quads whiteKeyPoints
     preservingMatrix $ drawNKeys nextWhiteKey 6
@@ -55,18 +59,25 @@ renderKeyboard    currentPitchClassPlayed isRightNotePlayed True   = do
     if white == Just False then do
         displayPressedKey isRightNotePlayed currentPitchClassPlayed False
         else return ()
-    
+
+-- | display the current played key in colour: green if it was the right one, red if it was the wrong one
 displayPressedKey :: Bool -> Maybe PitchClass  -> Bool -> IO ()
 displayPressedKey    True   (Just  pitchClass)    True = preservingMatrix $ do
-    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
+    translate$Vector3 (xCoordOfPitchClass pitchClass::GLfloat) 0 0
     renderPrimitive Quads greenKey
 displayPressedKey    False  (Just  pitchClass)    True = preservingMatrix $ do
-    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
+    translate$Vector3 (xCoordOfPitchClass pitchClass::GLfloat) 0 0
     renderPrimitive Quads redKey
 displayPressedKey    True   (Just  pitchClass)    False = preservingMatrix $ do
-    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
+    translate$Vector3 (xCoordOfPitchClass pitchClass::GLfloat) 0 0
     renderPrimitive Quads greenBlackKey
 displayPressedKey    False   (Just  pitchClass)   False = preservingMatrix $ do
-    translate$Vector3 (findPlaceFor pitchClass::GLfloat) 0 0
+    translate$Vector3 (xCoordOfPitchClass pitchClass::GLfloat) 0 0
     renderPrimitive Quads redBlackKey
 displayPressedKey    _       _                    _   = return ()
+
+-- | computes the x coordinate of the given pitch class
+xCoordOfPitchClass :: PitchClass -> GLfloat
+xCoordOfPitchClass    pitchClass | isWhiteKey pitchClass = heightMainNotes pitchClass
+xCoordOfPitchClass    pitchClass | pitchClass < E        = xCoordCs + (realToFrac (((absPitch (pitchClass,4)) `mod` 61))) / 2
+xCoordOfPitchClass    pitchClass | otherwise             = xCoordFs + (realToFrac (((absPitch (pitchClass,4)) `mod` 66))) / 2

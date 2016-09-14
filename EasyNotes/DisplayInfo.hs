@@ -11,10 +11,7 @@ import Time
 import View.Text
 import View.Key
 
-xCsBlackKey = 0.75
-xFsBlackKey = 3.75
-
--- | DisplayInfo contains all the information corresponding to the song which is needed to display the current state
+-- | contains all the information which is needed to display the current state
 data DisplayInfo = DisplayInfo {isRightNotePlayed :: Bool,
                                 isKeyPressed :: Bool,
                                 isMidiKeyPressed :: Bool,
@@ -53,24 +50,20 @@ updateDisplayInfo    displayInfo     startTimeRef      currentPitchClassPlayed  
             let remainingNotes = (fmap snd (songInfo displayInfo))
             displayInfo' <- updateLastNote currentPitchClassPlayed displayInfo
             -- RIGHT NOTE WAS PLAYED
-            if (isKeyPressed displayInfo) && isAbsPitchTheSame nextNote (lastNote displayInfo') then do
+            if (isKeyPressed displayInfo' || isMidiKeyPressed displayInfo') && isAbsPitchTheSame nextNote (lastNote displayInfo') then do
                 let newDisplayInfo = displayInfo' {isRightNotePlayed = True,
                                                   songInfo = updateSongInfo =<< remainingNotes}
                 resetTime startTimeRef
                 return newDisplayInfo
             -- WRONG NOTE WAS PLAYED
             else do
-                case (isKeyPressed displayInfo) of
+                case (isKeyPressed displayInfo' || isMidiKeyPressed displayInfo') of
                     False -> return displayInfo' {isRightNotePlayed = False}
                     True -> do
                         return $ displayInfo'
 
+-- | updates the last note that was played in the display information
 updateLastNote ::  Maybe PitchClass -> DisplayInfo     -> IO DisplayInfo
-updateLastNote     (Just pitchClass)   midiDisplayInfo = do
-            return (midiDisplayInfo {lastNote = Just pitchClass})
-updateLastNote     _                   midiDisplayInfo = return midiDisplayInfo
-
-findPlaceFor :: PitchClass -> GLfloat
-findPlaceFor    pitchClass | isWhiteKey pitchClass = heightMainNotes pitchClass
-findPlaceFor    pitchClass | pitchClass < E        = xCsBlackKey + (realToFrac (((absPitch (pitchClass,4)) `mod` 61))) / 2
-findPlaceFor    pitchClass | otherwise             = xFsBlackKey + (realToFrac (((absPitch (pitchClass,4)) `mod` 66))) / 2
+updateLastNote     (Just pitchClass)   displayInfo = do
+            return (displayInfo {lastNote = Just pitchClass})
+updateLastNote     _                   displayInfo = return displayInfo

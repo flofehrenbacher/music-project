@@ -18,18 +18,18 @@ placeNoteToBePlayed :: NominalDiffTime -> XCoordinate
 placeNoteToBePlayed difference = let x =  1.4 - (realToFrac (difference) / 4) in
     if x > haltingPosition then x else haltingPosition
 
-showNoteAboveKeyboard :: (String,GLfloat) -> XCoordinate -> IO()
-showNoteAboveKeyboard    (noteName,height)   x = do
+displayNoteAboveKeyboard :: (String,GLfloat) -> XCoordinate -> IO()
+displayNoteAboveKeyboard    (noteName,height)   x = do
         translate$Vector3 (x + 0.02::GLfloat) 0 0
         if height < 0 then preservingMatrix helpingLine else return ()
         translate$Vector3 0 (1.2285 + height::GLfloat ) 0
         lineWidth $= 2
         currentColor $= Color4 1 1 1 1
         scale 0.0007 0.00065 (0::GLfloat)
-        showNote noteName
+        displayNote noteName
 
-showTextAboveKeyboard :: String -> XCoordinate -> IO()
-showTextAboveKeyboard    text x = do
+displayTextAboveKeyboard :: String -> XCoordinate -> IO()
+displayTextAboveKeyboard    text x = do
         translate$Vector3 (x::GLfloat) 0.95 0
         currentColor $= Color4 1 1 1 1
         lineWidth $= 3
@@ -55,10 +55,10 @@ nextLabel    label  = do
     translate$Vector3 (115::GLfloat) 0 0
     renderString Roman label
 
-showNote :: String -> IO()
-showNote    noteName | takeEnd 1 (pack noteName) == pack "s" = renderString Roman "#o"
-showNote    noteName | takeEnd 1 (pack noteName) == pack "b" = renderString Roman "bo"
-showNote    noteName | otherwise = renderString Roman "o"
+displayNote :: String -> IO()
+displayNote    noteName | takeEnd 1 (pack noteName) == pack "s" = renderString Roman "#o"
+displayNote    noteName | takeEnd 1 (pack noteName) == pack "f" = renderString Roman "bo"
+displayNote    noteName | otherwise = renderString Roman "o"
 
 pitchInformation :: PitchClass -> (String, GLfloat)
 pitchInformation    pitchClass =  (show pitchClass, heightOf pitchClass)
