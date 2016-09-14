@@ -46,8 +46,8 @@ startSong    (modus,song)                     progName  =  do
     reshapeCallback $= Just reshape
     mainLoop
 
--- | checks if only two arguments were delivered
--- and returns them
+-- | checks if the list only contains two Strings and
+-- returns the corresponding Modus and Song, respectively
 setModusAndSong :: [String]    -> IO (Maybe Modus, Maybe Song)
 setModusAndSong    (myModus : song : []) = do
     return $ (readMaybe myModus, lookup song songCollection)
