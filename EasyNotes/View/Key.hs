@@ -7,6 +7,25 @@ import Graphics.UI.GLUT
 isWhiteKey :: PitchClass       -> Bool
 isWhiteKey    pitchClass       =  length (show pitchClass) == 1
 
+labelKeys :: IO ()
+labelKeys = do
+    currentColor $= Color4 0 0 0 1
+    lineWidth $= 3
+    scale 0.001 0.001 (0::GLfloat)
+    translate$Vector3 (50::GLfloat) 20 0
+    renderString Roman "C"
+    nextLabel "D"
+    nextLabel "E"
+    nextLabel "F"
+    nextLabel "G"
+    nextLabel "A"
+    nextLabel "B"
+
+nextLabel :: String -> IO ()
+nextLabel    label  = do
+    translate$Vector3 (115::GLfloat) 0 0
+    renderString Roman label
+
 drawBlackKeys :: IO ()
 drawBlackKeys = do
     currentColor $= Color4 0 0 0 1
