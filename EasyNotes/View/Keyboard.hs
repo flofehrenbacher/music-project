@@ -2,13 +2,14 @@ module View.Keyboard where
 
 import Euterpea
 
+import DisplayInfo
+import Modus
+import PitchClass
 import View.Clef
 import View.Fun
 import View.Text
-import Modus
 import View.Key
 import View.NoteLine
-import DisplayInfo
 
 import Graphics.Rendering.OpenGL
 

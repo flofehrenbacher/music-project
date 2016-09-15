@@ -58,6 +58,7 @@ filterNoteOn :: Message -> Maybe Pitch
 filterNoteOn    (NoteOn _ key _) = Just $ pitch key
 filterNoteOn    _                = Nothing
 
+
 readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
 readMidi devsIn devsOut = do
     let f [] = Nothing
