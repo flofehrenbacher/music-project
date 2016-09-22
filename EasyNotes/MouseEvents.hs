@@ -7,10 +7,12 @@ import Data.IORef
 import Euterpea
 import Graphics.UI.GLUT
 
+xStartWhiteKey, yStartWhiteKey, yEndWhiteKey :: Int
 xStartWhiteKey = 105
 yStartWhiteKey = 225
 yEndWhiteKey   = 425
 
+xStartBlackKey, yStartBlackKey, yEndBlackKey :: Int
 xStartBlackKey = 157
 yStartBlackKey = 227
 yEndBlackKey   = 350
@@ -26,63 +28,61 @@ mouse _              _        _          _  _ = return ()
 
 playAccordingToPosition :: IORef DisplayInfo -> OutputDeviceID -> Position -> GLint -> GLint ->  IO ()
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionBlackKey Cs x xSize && isYPositionBlackKey y ySize = do
-    sendPitchToSpeaker Cs displayInfoRef outputID
+    reactToIncomingPitchClass Cs displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionBlackKey Ds x xSize && isYPositionBlackKey y ySize = do
-    sendPitchToSpeaker Ds displayInfoRef outputID
+    reactToIncomingPitchClass Ds displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionBlackKey Fs x xSize && isYPositionBlackKey y ySize = do
-    sendPitchToSpeaker Fs displayInfoRef outputID
+    reactToIncomingPitchClass Fs displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionBlackKey Gs x xSize && isYPositionBlackKey y ySize = do
-    sendPitchToSpeaker Gs displayInfoRef outputID
+    reactToIncomingPitchClass Gs displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionBlackKey As x xSize && isYPositionBlackKey y ySize = do
-    sendPitchToSpeaker As displayInfoRef outputID
+    reactToIncomingPitchClass As displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey C x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker C displayInfoRef outputID
+    reactToIncomingPitchClass C displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey D x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker D displayInfoRef outputID
+    reactToIncomingPitchClass D displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey E x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker E displayInfoRef outputID
+    reactToIncomingPitchClass E displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey F x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker F displayInfoRef outputID
+    reactToIncomingPitchClass F displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey G x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker G displayInfoRef outputID
+    reactToIncomingPitchClass G displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey A x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker A displayInfoRef outputID
+    reactToIncomingPitchClass A displayInfoRef outputID
 playAccordingToPosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey B x xSize && isYPositionWhiteKey y ySize = do
-    sendPitchToSpeaker B displayInfoRef outputID
+    reactToIncomingPitchClass B displayInfoRef outputID
 playAccordingToPosition _ _ _ _ _= return ()
 
-
+-- | checks if the x-Position of the mouse is referring to a specified pitch class that corresponds to a black key
 isXPositionBlackKey :: PitchClass -> GLint -> GLint -> Bool
 isXPositionBlackKey    pitchClass x xSize = keyStartPosition < fromEnum x && keyEndPosition > fromEnum x
                                             where keyStartPosition | pitchClass < E = fromEnum ((xSize - 700) `div` 2) + xStartBlackKey + (((absPitch (pitchClass,4)) `mod` 61) `div` 2) * 70
                                                                    | otherwise      = fromEnum ((xSize - 700) `div` 2) + xStartBlackKey + 3 * 70 + (((absPitch (pitchClass,4)) `mod` 66) `div` 2) * 70
                                                   keyEndPosition   = keyStartPosition + 36
 
+-- | checks if the y-Position of the mouse is referring to a black key
 isYPositionBlackKey :: GLint -> GLint -> Bool
 isYPositionBlackKey    y        ySize = fromEnum y > (yStartBlackKey + (fromEnum ((ySize - 500) `div` 2))) && fromEnum y < (yEndBlackKey + (fromEnum ((ySize - 500) `div` 2)))
 
+-- | checks if the x-Position of the mouse is referring to a specified pitch class that corresponds to a white key
 isXPositionWhiteKey :: PitchClass -> GLint -> GLint -> Bool
 isXPositionWhiteKey    pitchClass    x        xSize = keyStartPosition < fromEnum x && keyEndPosition > fromEnum x
                                                         where keyStartPosition | pitchClass < F = fromEnum ((xSize - 700) `div` 2) + xStartWhiteKey + (((absPitch (pitchClass,4)) `mod` 60) `div` 2) * 70
                                                                                | otherwise      = fromEnum ((xSize - 700) `div` 2) + xStartWhiteKey + 3 * 70 + (((absPitch (pitchClass,4)) `mod` 65) `div` 2) * 70
                                                               keyEndPosition   = keyStartPosition + 70
 
+-- | checks if the y-Position of the mouse is referring to a white key
 isYPositionWhiteKey :: GLint -> GLint -> Bool
 isYPositionWhiteKey    y        ySize = fromEnum y > (yStartWhiteKey + (fromEnum ((ySize - 500) `div` 2))) && fromEnum y < (yEndWhiteKey + (fromEnum ((ySize - 500) `div` 2)))
 
-keyPressed :: IORef DisplayInfo -> Bool    -> IO ()
-keyPressed    displayInfoRef       press   = do
+-- | updates in the display information the last note and the current note,
+--   sets the truth value of True that a key is currently pressed on the screen and the sends the pitch class to the speaker
+reactToIncomingPitchClass :: PitchClass -> IORef DisplayInfo -> OutputDeviceID -> IO ()
+reactToIncomingPitchClass    pc            displayInfoRef       outputID       = do
     displayInfo <- readIORef displayInfoRef
-    let newDisplayInfo = displayInfo {isKeyPressed = press}
+    let newDisplayInfo = displayInfo {lastNote = Just pc, currentNote = Just pc, isScreenKeyPressed = True}
     displayInfoRef $= newDisplayInfo
-
-sendPitchToSpeaker :: PitchClass -> IORef DisplayInfo -> OutputDeviceID -> IO ()
-sendPitchToSpeaker    pc            displayInfoRef       outputID       = do
-    displayInfo <- readIORef displayInfoRef
-    let newDisplayInfo = displayInfo {lastNote = Just pc}
     sendMidiToSpeakers pc outputID
-    displayInfoRef $= newDisplayInfo
-    keyPressed displayInfoRef True
 
 sendMidiToSpeakers :: PitchClass -> OutputDeviceID -> IO()
 sendMidiToSpeakers pc outputID = do
