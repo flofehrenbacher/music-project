@@ -13,6 +13,7 @@ import View.NoteLine
 
 import Graphics.Rendering.OpenGL
 
+xCoordCs, xCoordFs :: GLfloat
 xCoordCs = 0.75
 xCoordFs = 3.75
 
@@ -22,7 +23,7 @@ xCoordFs = 3.75
 displayAllTogether :: DisplayInfo -> Modus -> IO ()
 displayAllTogether    displayInfo    modus =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
-    let isKeyCurrentPressed = isKeyPressed displayInfo || isMidiKeyPressed displayInfo
+    let isKeyCurrentPressed = isScreenKeyPressed displayInfo || isMidiKeyPressed displayInfo
     preservingMatrix $ drawLines
     preservingMatrix $ drawClef
     case songInfo displayInfo of
@@ -35,7 +36,7 @@ displayAllTogether    displayInfo    modus =  do
             if modus /= Hard then preservingMatrix $ displayTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
             preservingMatrix $ displayNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
-            preservingMatrix $ displayKeyboard (lastNote displayInfo) (isRightNotePlayed displayInfo) isKeyCurrentPressed
+            preservingMatrix $ displayKeyboard (currentNote displayInfo) (isRightNotePlayed displayInfo) isKeyCurrentPressed
             if modus == Easy then preservingMatrix $ labelKeys
                 else return ()
 
