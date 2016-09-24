@@ -35,7 +35,7 @@ main = do
 startSong :: (Modus, Song)                 -> String    -> IO()
 startSong    (modus,song)                     progName  =  do
     initialDisplayMode $= [DoubleBuffered]
-    initialWindowSize  $= Size 700 500
+    initialWindowSize  $= Size initWidth initHeight
     createWindow progName
     (inputID, outputID) <- initDevices
     jingle outputID

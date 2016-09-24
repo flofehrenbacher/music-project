@@ -2,6 +2,7 @@ module MouseEvents where
 
 import MidiFun
 import DisplayInfo
+import WindowSize
 
 import Data.IORef
 import Euterpea
@@ -56,24 +57,24 @@ playAccordingToPosition _ _ _ _ _= return ()
 -- | checks if the x-Position of the mouse is referring to a specified pitch class that corresponds to a black key
 isXPositionBlackKey :: PitchClass -> GLint -> GLint -> Bool
 isXPositionBlackKey    pitchClass x xSize = keyStartPosition < fromEnum x && keyEndPosition > fromEnum x
-                                            where keyStartPosition | pitchClass < E = fromEnum ((xSize - 700) `div` 2) + xStartBlackKey + (((absPitch (pitchClass,4)) `mod` 61) `div` 2) * 70
-                                                                   | otherwise      = fromEnum ((xSize - 700) `div` 2) + xStartBlackKey + 3 * 70 + (((absPitch (pitchClass,4)) `mod` 66) `div` 2) * 70
+                                            where keyStartPosition | pitchClass < E = fromEnum ((xSize - initWidth) `div` 2) + xStartBlackKey + (((absPitch (pitchClass,4)) `mod` 61) `div` 2) * 70
+                                                                   | otherwise      = fromEnum ((xSize - initWidth) `div` 2) + xStartBlackKey + 3 * 70 + (((absPitch (pitchClass,4)) `mod` 66) `div` 2) * 70
                                                   keyEndPosition   = keyStartPosition + 36
 
 -- | checks if the y-Position of the mouse is referring to a black key
 isYPositionBlackKey :: GLint -> GLint -> Bool
-isYPositionBlackKey    y        ySize = fromEnum y > (yStartBlackKey + (fromEnum ((ySize - 500) `div` 2))) && fromEnum y < (yEndBlackKey + (fromEnum ((ySize - 500) `div` 2)))
+isYPositionBlackKey    y        ySize = fromEnum y > (yStartBlackKey + (fromEnum ((ySize - initHeight) `div` 2))) && fromEnum y < (yEndBlackKey + (fromEnum ((ySize - initHeight) `div` 2)))
 
 -- | checks if the x-Position of the mouse is referring to a specified pitch class that corresponds to a white key
 isXPositionWhiteKey :: PitchClass -> GLint -> GLint -> Bool
 isXPositionWhiteKey    pitchClass    x        xSize = keyStartPosition < fromEnum x && keyEndPosition > fromEnum x
-                                                        where keyStartPosition | pitchClass < F = fromEnum ((xSize - 700) `div` 2) + xStartWhiteKey + (((absPitch (pitchClass,4)) `mod` 60) `div` 2) * 70
-                                                                               | otherwise      = fromEnum ((xSize - 700) `div` 2) + xStartWhiteKey + 3 * 70 + (((absPitch (pitchClass,4)) `mod` 65) `div` 2) * 70
+                                                        where keyStartPosition | pitchClass < F = fromEnum ((xSize - initWidth) `div` 2) + xStartWhiteKey + (((absPitch (pitchClass,4)) `mod` 60) `div` 2) * 70
+                                                                               | otherwise      = fromEnum ((xSize - initWidth) `div` 2) + xStartWhiteKey + 3 * 70 + (((absPitch (pitchClass,4)) `mod` 65) `div` 2) * 70
                                                               keyEndPosition   = keyStartPosition + 70
 
 -- | checks if the y-Position of the mouse is referring to a white key
 isYPositionWhiteKey :: GLint -> GLint -> Bool
-isYPositionWhiteKey    y        ySize = fromEnum y > (yStartWhiteKey + (fromEnum ((ySize - 500) `div` 2))) && fromEnum y < (yEndWhiteKey + (fromEnum ((ySize - 500) `div` 2)))
+isYPositionWhiteKey    y        ySize = fromEnum y > (yStartWhiteKey + (fromEnum ((ySize - initHeight) `div` 2))) && fromEnum y < (yEndWhiteKey + (fromEnum ((ySize - initHeight) `div` 2)))
 
 -- | updates in the display information the last note and the current note,
 --   sets the truth value of True that a key is currently pressed on the screen and the sends the pitch class to the speaker
