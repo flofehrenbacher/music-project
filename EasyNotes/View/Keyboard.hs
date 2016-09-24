@@ -3,7 +3,7 @@ module View.Keyboard where
 import Euterpea
 
 import DisplayInfo
-import Modus
+import Difficulty
 import PitchClass
 import View.Clef
 import View.Fun
@@ -19,9 +19,9 @@ xCoordFs = 3.75
 
 -- | displays the keyboard according to the current displayInfo
 -- depends on if the last note that was played was the right one,
--- on which the next note is and on which modus is chosen
-displayAllTogether :: DisplayInfo -> Modus -> IO ()
-displayAllTogether    displayInfo    modus =  do
+-- on which the next note is and on which difficulty is chosen
+displayAllTogether :: DisplayInfo -> Difficulty -> IO ()
+displayAllTogether    displayInfo    difficulty =  do
     translate$Vector3 (-0.7::GLfloat) (-0.7) 0
     let isKeyCurrentPressed = isScreenKeyPressed displayInfo || isMidiKeyPressed displayInfo
     preservingMatrix $ drawLines
@@ -33,11 +33,11 @@ displayAllTogether    displayInfo    modus =  do
             preservingMatrix $ displayKeyboard Nothing False False
         -- SONG CONTINUES
         Just (noteToBePlayed, restNotes) -> do
-            if modus /= Hard then preservingMatrix $ displayTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
+            if difficulty /= Hard then preservingMatrix $ displayTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
             preservingMatrix $ displayNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
             preservingMatrix $ displayKeyboard (currentNote displayInfo) (isRightNotePlayed displayInfo) isKeyCurrentPressed
-            if modus == Easy then preservingMatrix $ labelKeys
+            if difficulty == Easy then preservingMatrix $ labelKeys
                 else return ()
 
 -- | displays one octave of a keyboard including the possibly currently played key
