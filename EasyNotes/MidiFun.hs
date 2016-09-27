@@ -61,17 +61,17 @@ filterNoteOn    _                = Nothing
 
 readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
 readMidi devsIn devsOut = do
-    let f [] = Nothing
-        f xs = Just $ map (\m -> (0, Std $ m)) xs
-        g Nothing = []
-        g (Just (t,ms)) = ms
+    let transform [] = Nothing
+        transform xs = Just $ map (\message -> (0, Std $ message)) xs
+        signalToMessage Nothing = []
+        signalToMessage (Just (t,message)) = message
     msgs <- sequence $ map pollMidi devsIn -- get MIDI messages coming
     let actual = head msgs
-    let outVal = f $ concatMap g msgs
-    sequence $ map (\d -> sendMidiOut d outVal) devsOut
+    let outputValue = transform $ concatMap signalToMessage msgs
+    sequence $ map (\outputDevice -> sendMidiOut outputDevice outputValue) devsOut
     return actual
 
 -- | sends a midi event to the specified outputDevice
 sendMidiOut :: OutputDeviceID -> Maybe [(Time, MidiMessage)] -> IO ()
-sendMidiOut dev ms = outputMidi dev >>
-    maybe (return ()) (mapM_ (\(t,m) -> deliverMidiEvent dev (0, m))) ms
+sendMidiOut dev message = outputMidi dev >>
+    maybe (return ()) (mapM_ (\(t,m) -> deliverMidiEvent dev (0, m))) message
