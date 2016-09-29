@@ -1,3 +1,4 @@
+-- | This module defines the information that is needed to display the current state of the game.
 module DisplayInfo where
 
 import SongCollection
@@ -11,10 +12,11 @@ import Data.Time.Clock
 import Euterpea
 import Graphics.UI.GLUT
 
+-- | The x coordinate where the note is initially placed.
 initialNotePlace :: GLfloat
 initialNotePlace = 1.4
 
--- | contains all the information which is needed to display the current state
+-- | contains all the information which is needed to display the current state.
 data DisplayInfo = DisplayInfo {isRightNotePlayed :: Bool,
                                 isScreenKeyPressed :: Bool,
                                 isMidiKeyPressed :: Bool,
@@ -24,7 +26,7 @@ data DisplayInfo = DisplayInfo {isRightNotePlayed :: Bool,
                                 notePlace :: GLfloat}
                                   deriving (Eq,Show)
 
--- | returns the initial information to display the initial state according to the passed song
+-- | returns the initial information to display the initial state according to the passed song.
 initializeDisplayInfo :: Song -> IO (IORef DisplayInfo, IORef UTCTime)
 initializeDisplayInfo    song = do
     displayInfoRef <- newIORef $ DisplayInfo {isRightNotePlayed = False,
@@ -38,9 +40,10 @@ initializeDisplayInfo    song = do
     startTimeRef   <- newIORef curTime
     return (displayInfoRef,startTimeRef)
 
--- | updates the song information, speaking returns a tuple containing the next pitch class which has to be played
--- and a list of the remaining notes of the song
--- if the song has finished returns Nothing
+-- | updates the song information, speaking returns a tuple containing the next 'Pitch Class' which has to be played
+-- and a list of the remaining notes ('[Music Pitch]') of the song.
+-- 
+-- If the song has finished returns 'Nothing'
 updateSongInfo :: Song                                      -> Maybe (PitchClass, [Music Pitch])
 updateSongInfo    []                                         =  Nothing
 updateSongInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) =  (Just (pitchClass, notes))
@@ -68,13 +71,13 @@ updateDisplayInfo    displayInfo     startTimeRef      currentPitchClassPlayed  
                     True -> do
                         return $ displayInfo'
 
--- | updates in the display information the last note that was played
+-- | Updates in the display information the 'lastNote' that was played
 updateLastNote ::  Maybe PitchClass -> DisplayInfo     -> IO DisplayInfo
 updateLastNote     (Just pitchClass)   displayInfo = do
             return (displayInfo {lastNote = Just pitchClass, currentNote = Just pitchClass})
 updateLastNote     _                   displayInfo = return displayInfo
 
--- | updates in the display information if a key is currently pressed on the screen
+-- | Updates in the display information if a key is currently pressed on the screen ('isScreenKeyPressed')
 keyPressed :: IORef DisplayInfo -> Bool    -> IO ()
 keyPressed    displayInfoRef       press   = do
     displayInfo <- readIORef displayInfoRef

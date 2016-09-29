@@ -1,3 +1,4 @@
+-- | This module defines the displaycallback for Easy Notes
 module Display where
 
 import Graphics.UI.GLUT

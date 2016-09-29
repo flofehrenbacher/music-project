@@ -1,3 +1,6 @@
+-- | This module defines a short /jingle/ which is played at the beginning of /Easy Notes/.
+--
+-- This allows the program to initialize completely!
 module Jingle where
 
 import MouseEvents
@@ -5,7 +8,7 @@ import Euterpea
 
 import Control.Concurrent
 
--- | plays a short jingle
+-- | sends a short jingle to the output device with the specified 'OutputDeviceID'
 jingle :: OutputDeviceID -> IO ()
 jingle outputID = do
     sendMidiToSpeakers C outputID

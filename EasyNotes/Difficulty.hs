@@ -1,9 +1,10 @@
+-- | This module shows the different difficulties used in Easy Notes
 module Difficulty where
 
 data Difficulty = Easy | Medium | Hard
     deriving (Eq,Read,Show,Enum)
 
--- | puts all modi into a list of strings
--- the first data type of Difficulty MUST be Easy
-getAllModi :: [String]
-getAllModi = map show $ enumFrom Easy
+-- | Puts all modes into a list of strings. 
+-- The first data type of Difficulty /must/ be 'Easy'
+getAllModes :: [String]
+getAllModes = map show $ enumFrom Easy

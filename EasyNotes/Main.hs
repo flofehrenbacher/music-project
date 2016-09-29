@@ -26,7 +26,7 @@ main = do
     case (difficulty, song) of
         (Just difficulty', Just song') -> startSong (difficulty',song') progName
         (_          , _         ) ->  do
-            putStrLn $ "The first argument must be the difficulty: " ++ unwords getAllModi
+            putStrLn $ "The first argument must be the difficulty: " ++ unwords getAllModes
             putStrLn "The second argument must be the song you want to learn" 
             putStrLn $ "You can choose one of the following: " ++ unwords allSongs
 

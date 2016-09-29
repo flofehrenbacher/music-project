@@ -1,3 +1,6 @@
+-- | This module defines the idlecallback of /Easy Notes/
+--
+-- Here all background computations are made.
 module Idle where
 
 import DisplayInfo
@@ -10,6 +13,9 @@ import Data.Time.Clock
 import Euterpea.IO.MIDI.MidiIO
 import Graphics.UI.GLUT
 
+-- | Computes the time that has passed since the last right note was played.
+--
+-- Also receives MIDI events and passes it on if it is corresponding to a pressed key.
 idle ::  IORef UTCTime -> (InputDeviceID,OutputDeviceID) -> IORef DisplayInfo -> IdleCallback
 idle     startTimeRef     (inputID, outputID)              displayInfoRef = do
     difference <- computePassedTime startTimeRef

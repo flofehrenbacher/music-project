@@ -1,3 +1,4 @@
+-- | This module provides functions concerning the current time
 module Time where
 
 import Data.Time.Clock

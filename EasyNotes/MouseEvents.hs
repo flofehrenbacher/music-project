@@ -1,3 +1,4 @@
+-- | This module defines what happens when the mousecallback is called
 module MouseEvents where
 
 import MidiFun
