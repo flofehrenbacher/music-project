@@ -1,3 +1,4 @@
+-- | This module contains everything concerning the MIDI devices / events
 module MidiFun where
 
 import DisplayInfo
@@ -42,6 +43,7 @@ midiToPitchClass (Just (_,(message : _))) = do
         Nothing         -> return Nothing
 midiToPitchClass _ = return Nothing
 
+-- | updates in the display information weather there is currently a key pressed on the midi device
 updateIsMidiKeyPressed :: (Maybe (Time,[Message])) -> DisplayInfo -> IO DisplayInfo
 updateIsMidiKeyPressed currentMsg displayInfo = do
     case currentMsg of
@@ -49,7 +51,7 @@ updateIsMidiKeyPressed currentMsg displayInfo = do
             return $ displayInfo {isMidiKeyPressed = True}
         Just (_,((ControlChange _ _ _) : _)) -> do
             return $ displayInfo {isMidiKeyPressed = False}
-        Nothing -> return displayInfo
+        _ -> return displayInfo
 
 -- | checks if midi message corresponds to a note
 -- and returns its pitch if it is a note
@@ -58,18 +60,19 @@ filterNoteOn :: Message -> Maybe Pitch
 filterNoteOn    (NoteOn _ key _) = Just $ pitch key
 filterNoteOn    _                = Nothing
 
-
+-- | reads all MIDI events received from the input devices and sends them to the output devices
+-- returns the latest MIDI event
 readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
 readMidi devsIn devsOut = do
     let transform [] = Nothing
         transform xs = Just $ map (\message -> (0, Std $ message)) xs
         signalToMessage Nothing = []
         signalToMessage (Just (t,message)) = message
-    msgs <- sequence $ map pollMidi devsIn -- get MIDI messages coming
-    let actual = head msgs
-    let outputValue = transform $ concatMap signalToMessage msgs
+    events <- sequence $ map pollMidi devsIn -- get MIDI messages coming
+    let latestMidiEvent = head events
+    let outputValue = transform $ concatMap signalToMessage events
     sequence $ map (\outputDevice -> sendMidiOut outputDevice outputValue) devsOut
-    return actual
+    return latestMidiEvent
 
 -- | sends a midi event to the specified outputDevice
 sendMidiOut :: OutputDeviceID -> Maybe [(Time, MidiMessage)] -> IO ()
