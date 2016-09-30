@@ -3,6 +3,12 @@ module PitchClass where
 import Euterpea
 import Graphics.UI.GLUT
 
+
+isAbsPitchTheSame :: Maybe PitchClass -> Maybe PitchClass                                   -> Bool
+isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)       | pcToInt pcOne == pcToInt pcTwo = True
+                                                           | otherwise                      = False
+isAbsPitchTheSame   _                   _                                                   = False
+
 pitchInformation :: PitchClass -> (String, GLfloat)
 pitchInformation    pitchClass =  (show pitchClass, heightOf pitchClass)
 

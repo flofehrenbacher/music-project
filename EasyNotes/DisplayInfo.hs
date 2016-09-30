@@ -2,7 +2,7 @@
 module DisplayInfo where
 
 import SongCollection
-import Songs.AuxilaryFunctions
+import PitchClass
 import Time
 import View.Text
 import View.Key
@@ -16,7 +16,14 @@ import Graphics.UI.GLUT
 initialNotePlace :: GLfloat
 initialNotePlace = 1.4
 
--- | contains all the information which is needed to display the current state.
+-- | Contains all the information which is needed to display the current state.
+-- 
+--   - 'songInfo' is either 'Just' a tuple of the next note which has to be played
+--      and the remaining notes or 'Nothing' in case the song is finished
+--   - 'notePlace' is the x-coordinate at which the next note is displayed
+--   - 'currentNote' is either 'Just' the PitchClass of the note which is currently played or 'Nothing'
+--      if nothing is played at the moment
+--   - 'lastNote' remembers the last note that was played by the user. Is 'Nothing' at the beginning.
 data DisplayInfo = DisplayInfo {isRightNotePlayed :: Bool,
                                 isScreenKeyPressed :: Bool,
                                 isMidiKeyPressed :: Bool,
@@ -26,7 +33,7 @@ data DisplayInfo = DisplayInfo {isRightNotePlayed :: Bool,
                                 notePlace :: GLfloat}
                                   deriving (Eq,Show)
 
--- | returns the initial information to display the initial state according to the passed song.
+-- | Returns the initial information to display the initial state according to the passed 'Song'.
 initializeDisplayInfo :: Song -> IO (IORef DisplayInfo, IORef UTCTime)
 initializeDisplayInfo    song = do
     displayInfoRef <- newIORef $ DisplayInfo {isRightNotePlayed = False,
@@ -40,8 +47,7 @@ initializeDisplayInfo    song = do
     startTimeRef   <- newIORef curTime
     return (displayInfoRef,startTimeRef)
 
--- | updates the song information, speaking returns a tuple containing the next 'Pitch Class' which has to be played
--- and a list of the remaining notes ('[Music Pitch]') of the song.
+-- | Returns the current 'songInfo' according to how many notes are left to play.
 -- 
 -- If the song has finished returns 'Nothing'
 updateSongInfo :: Song                                      -> Maybe (PitchClass, [Music Pitch])
@@ -71,13 +77,13 @@ updateDisplayInfo    displayInfo     startTimeRef      currentPitchClassPlayed  
                     True -> do
                         return $ displayInfo'
 
--- | Updates in the display information the 'lastNote' that was played
+-- | Updates in the 'DisplayInfo' the 'lastNote' that was played
 updateLastNote ::  Maybe PitchClass -> DisplayInfo     -> IO DisplayInfo
 updateLastNote     (Just pitchClass)   displayInfo = do
             return (displayInfo {lastNote = Just pitchClass, currentNote = Just pitchClass})
 updateLastNote     _                   displayInfo = return displayInfo
 
--- | Updates in the display information if a key is currently pressed on the screen ('isScreenKeyPressed')
+-- | Updates in the 'DisplayInfo' weather a key is currently pressed on the screen ('isScreenKeyPressed') or not
 keyPressed :: IORef DisplayInfo -> Bool    -> IO ()
 keyPressed    displayInfoRef       press   = do
     displayInfo <- readIORef displayInfoRef

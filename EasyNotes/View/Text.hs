@@ -51,3 +51,22 @@ displayNoteName    noteName  xCoord  = do
         lineWidth $= 3
         scale 0.0011 0.0011 (0::GLfloat)
         renderString Roman noteName
+
+-- | Displays the labels of all the white keys of the keyboard
+labelKeys :: IO ()
+labelKeys = do
+    currentColor $= Color4 0 0 0 1
+    lineWidth $= 3
+    scale 0.001 0.001 (0::GLfloat)
+    translate$Vector3 (50::GLfloat) 20 0
+    renderString Roman "C"
+    nextLabel "D"
+    nextLabel "E"
+    nextLabel "F"
+    nextLabel "G"
+    nextLabel "A"
+    nextLabel "B"
+          where nextLabel :: String -> IO ()
+                nextLabel    label  = do
+                    translate$Vector3 (115::GLfloat) 0 0
+                    renderString Roman label
