@@ -29,11 +29,11 @@ displayAllTogether    displayInfo    difficulty =  do
     case songInfo displayInfo of
         -- SONG FINISHED
         Nothing -> do
-            preservingMatrix $ displayTextAboveKeyboard "Song finished!" 0.3
+            preservingMatrix $ displayNoteName "Song finished!" 0.3
             preservingMatrix $ displayKeyboard Nothing False False
         -- SONG CONTINUES
         Just (noteToBePlayed, restNotes) -> do
-            if difficulty /= Hard then preservingMatrix $ displayTextAboveKeyboard (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
+            if difficulty /= Hard then preservingMatrix $ displayNoteName (fst (pitchInformation noteToBePlayed)) (notePlace displayInfo)
                 else return ()
             preservingMatrix $ displayNoteAboveKeyboard (pitchInformation noteToBePlayed) (notePlace displayInfo)
             preservingMatrix $ displayKeyboard (currentNote displayInfo) (isRightNotePlayed displayInfo) isKeyCurrentPressed

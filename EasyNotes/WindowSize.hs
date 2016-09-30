@@ -3,6 +3,7 @@ module WindowSize where
 
 import Graphics.UI.GLUT
 
+-- | initital width and height, respectivly
 initHeight, initWidth :: GLint
 initHeight = 500
 initWidth  = 700
