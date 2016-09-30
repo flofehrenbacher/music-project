@@ -3,4 +3,5 @@ Easy Notes is a program which should help users to get familiar with musical not
 
 I run and tested Easy Notes on Windows.
 Virtual MIDI controller: Proxima Controller - http://zetacentauri.com/software_proximacontrol.htm
+
 Internal MIDI port: LoopBe1 - http://www.nerds.de/en/loopbe1.html
