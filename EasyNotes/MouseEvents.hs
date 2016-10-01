@@ -53,8 +53,8 @@ reactToMousePosition displayInfoRef outputID (Position x y) xSize ySize| isXPosi
     reactToIncomingPitchClass E displayInfoRef outputID
 reactToMousePosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey F x xSize && isYPositionWhiteKey y ySize = do
     reactToIncomingPitchClass F displayInfoRef outputID
-reactToMousePosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey signalToMessage x xSize && isYPositionWhiteKey y ySize = do
-    reactToIncomingPitchClass signalToMessage displayInfoRef outputID
+reactToMousePosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey G x xSize && isYPositionWhiteKey y ySize = do
+    reactToIncomingPitchClass G displayInfoRef outputID
 reactToMousePosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey A x xSize && isYPositionWhiteKey y ySize = do
     reactToIncomingPitchClass A displayInfoRef outputID
 reactToMousePosition displayInfoRef outputID (Position x y) xSize ySize| isXPositionWhiteKey B x xSize && isYPositionWhiteKey y ySize = do

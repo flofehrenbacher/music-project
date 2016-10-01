@@ -11,16 +11,16 @@ import Control.Concurrent
 -- | sends a short jingle to the output device with the specified 'OutputDeviceID'
 jingle :: OutputDeviceID -> IO ()
 jingle outputID = do
-    sendMidiToSpeakers C outputID
+    sendPitchClassToSpeakers C outputID
     threadDelay 500000
-    sendMidiToSpeakers E outputID
+    sendPitchClassToSpeakers E outputID
     threadDelay 500000
-    sendMidiToSpeakers G outputID
+    sendPitchClassToSpeakers G outputID
     threadDelay 500000
-    sendMidiToSpeakers E outputID
+    sendPitchClassToSpeakers E outputID
     threadDelay 250000
-    sendMidiToSpeakers D outputID
+    sendPitchClassToSpeakers D outputID
     threadDelay 250000
-    sendMidiToSpeakers C outputID
+    sendPitchClassToSpeakers C outputID
     threadDelay 500000
     stopSpeakers outputID
