@@ -12,7 +12,7 @@ isAbsPitchTheSame   (Just  pcOne)       (Just pcTwo)       | pcToInt pcOne == pc
                                                            | otherwise                      = False
 isAbsPitchTheSame   _                   _                                                   = False
 
--- | Returns a tuple of the name of the pitch class and the 
+-- | Returns a tuple of the name of the PitchClass and the 
 -- height where it has to be displayed on the note line. 
 pitchInformation :: PitchClass -> (String, GLfloat)
 pitchInformation    pitchClass =  (show pitchClass, heightOf pitchClass)

@@ -4,7 +4,7 @@ module View.Clef where
 import View.Fun
 import Graphics.UI.GLUT
 
--- | draws a simple treble clef to the canvas
+-- | Draws a simple treble clef to the canvas
 drawClef :: IO ()
 drawClef = do
     translate$Vector3 (-0.1::GLfloat) (1.25) 0
