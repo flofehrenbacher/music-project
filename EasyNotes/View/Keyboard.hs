@@ -88,6 +88,6 @@ displayPressedKey    _       _                    _   = return ()
 
 -- | Computes the x coordinate of the given pitch class at which the corresponding key starts
 xCoordOfPitchClass :: PitchClass -> GLfloat
-xCoordOfPitchClass    pitchClass | isWhiteKey pitchClass = heightMainNotes pitchClass
+xCoordOfPitchClass    pitchClass | isWhiteKey pitchClass = nthMainNote pitchClass
 xCoordOfPitchClass    pitchClass | pitchClass < E        = xCoordCs + (realToFrac (((absPitch (pitchClass,4)) `mod` 61))) / 2
 xCoordOfPitchClass    pitchClass | otherwise             = xCoordFs + (realToFrac (((absPitch (pitchClass,4)) `mod` 66))) / 2

@@ -56,7 +56,8 @@ updateSongInfo    ((Prim (Note _ ((pitchClass,_)))) : notes) =  (Just (pitchClas
 updateSongInfo    ((Prim (Rest _)) : notes)                  =  updateSongInfo notes
 updateSongInfo    _                                          =  Nothing
 
--- besser strukturieren / seperieren mit maybe / time
+-- | According to the current 'DisplayInfo', the time that has passed since the last correct note was played,
+--   and the possible current PitchClass that is played updates the 'DisplayInfo'.
 updateDisplayInfo :: DisplayInfo ->  IORef UTCTime  -> Maybe PitchClass                                   -> IO (DisplayInfo)
 updateDisplayInfo    displayInfo     _                 _                | songInfo displayInfo == Nothing = return displayInfo
 updateDisplayInfo    displayInfo     startTimeRef      currentPitchClassPlayed                            = do
