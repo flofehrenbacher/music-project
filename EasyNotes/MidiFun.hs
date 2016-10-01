@@ -6,19 +6,19 @@ import DisplayInfo
 import Euterpea.IO.MIDI.MidiIO
 import Euterpea
 
--- | returns the first found midi input device
+-- | Returns the first found midi input device
 getFirstInputID :: IO InputDeviceID
 getFirstInputID = do
     (((deviceID,_):_) ,_) <- getAllDevices
     return deviceID
 
--- | returns the first found midi output device
+-- | Returns the first found midi output device
 getFirstOutputID :: IO OutputDeviceID
 getFirstOutputID = do
     (_ ,((deviceID,_):_)) <- getAllDevices
     return deviceID
 
--- | returns a tuple of first midi input device and first midi output device
+-- | Returns a tuple of first midi input device and first midi output device
 initDevices :: IO (InputDeviceID, OutputDeviceID)
 initDevices = do
     initializeMidi
@@ -26,15 +26,15 @@ initDevices = do
     outputID <- getFirstOutputID
     return (inputID, outputID)
 
--- | transforms a midi message into a Music Pitch
--- if the message corresponds to a note
--- otherwise returns Nothing
+-- | Transforms a midi message into a Music Pitch.
+-- if the 'Message' corresponds to a note.
+-- Otherwise returns 'Nothing'
 midiMessageToMusicPitch :: Message -> Maybe (Music Pitch)
 midiMessageToMusicPitch    message = (Prim . Note wn) <$> filterNoteOn message
 
--- | transforms a midi event into a PitchClass
+-- | Transforms a midi event into a PitchClass
 -- if there actually is a midi event and it could be transformed to a music pitch
--- otherwise returns Nothing
+-- Otherwise returns 'Nothing'
 midiToPitchClass :: (Maybe (Time,[Message])) -> IO (Maybe PitchClass)
 midiToPitchClass (Just (_,(message : _))) = do
     case midiMessageToMusicPitch message of
@@ -43,7 +43,7 @@ midiToPitchClass (Just (_,(message : _))) = do
         Nothing         -> return Nothing
 midiToPitchClass _ = return Nothing
 
--- | updates in the display information weather there is currently a key pressed on the midi device
+-- | Updates in the 'DisplayInfo' weather there is currently a key pressed on the midi device
 updateIsMidiKeyPressed :: (Maybe (Time,[Message])) -> DisplayInfo -> IO DisplayInfo
 updateIsMidiKeyPressed currentMsg displayInfo = do
     case currentMsg of
@@ -53,15 +53,16 @@ updateIsMidiKeyPressed currentMsg displayInfo = do
             return $ displayInfo {isMidiKeyPressed = False}
         _ -> return displayInfo
 
--- | checks if midi message corresponds to a note
--- and returns its pitch if it is a note
--- otherwise returns Nothing
+-- | Checks whether a midi 'Message' corresponds to a note
+-- and returns its pitch if it is a note.
+-- Otherwise returns 'Nothing'
 filterNoteOn :: Message -> Maybe Pitch
 filterNoteOn    (NoteOn _ key _) = Just $ pitch key
 filterNoteOn    _                = Nothing
 
--- | reads all MIDI events received from the input devices and sends them to the output devices
--- returns the latest MIDI event
+-- | Reads all MIDI events received from the input devices and sends them to the output devices
+-- 
+-- Returns the latest MIDI event.
 readMidi :: [InputDeviceID] -> [OutputDeviceID] -> IO (Maybe (Time,[Message]))
 readMidi devsIn devsOut = do
     let transform [] = Nothing
@@ -74,7 +75,7 @@ readMidi devsIn devsOut = do
     sequence $ map (\outputDevice -> sendMidiOut outputDevice outputValue) devsOut
     return latestMidiEvent
 
--- | sends a midi event to the specified outputDevice
+-- | Sends a midi event to the specified outputDevice
 sendMidiOut :: OutputDeviceID -> Maybe [(Time, MidiMessage)] -> IO ()
 sendMidiOut dev message = outputMidi dev >>
-    maybe (return ()) (mapM_ (\(t,m) -> deliverMidiEvent dev (0, m))) message
+    maybe (return ()) (mapM_ (\(t,message) -> deliverMidiEvent dev (0, message))) message

@@ -1,6 +1,7 @@
 -- | This module shows the different difficulties used in Easy Notes
 module Difficulty where
 
+-- | This data type consists of three difficulty levels
 data Difficulty = Easy | Medium | Hard
     deriving (Eq,Read,Show,Enum)
 

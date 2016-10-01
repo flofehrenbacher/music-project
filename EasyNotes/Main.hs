@@ -16,9 +16,10 @@ import Euterpea
 import Graphics.UI.GLUT
 import Text.Read
 
--- | starts the whole program
--- if difficulty and song were delivered correctly the song starts
--- otherwise the possibilities for difficulty and song will be printed to the console
+-- | Starts the whole program.
+--
+-- If 'Difficulty' and 'Song' were delivered correctly the program will be executed.
+-- Otherwise the possibilities for 'Difficulty' and 'Song' will be printed to the console.
 main :: IO ()
 main = do
     (progName, args) <- getArgsAndInitialize
@@ -30,8 +31,8 @@ main = do
             putStrLn "The second argument must be the song you want to learn" 
             putStrLn $ "You can choose one of the following: " ++ unwords allSongs
 
--- | starts the mainWindow, initializes the information according to the song,
--- initializes MidiDevices and callbacks
+-- | Starts the main window, initializes the 'displayInfo' according to the 'Song',
+-- initializes the input and output midi devices and the callbacks.
 startSong :: (Difficulty, Song)                 -> String    -> IO()
 startSong    (difficulty,song)                     progName  =  do
     initialDisplayMode $= [DoubleBuffered]
@@ -46,8 +47,8 @@ startSong    (difficulty,song)                     progName  =  do
     reshapeCallback $= Just reshape
     mainLoop
 
--- | checks if the list only contains two Strings and
--- returns the corresponding difficulty and Song, respectively
+-- | Checks whether the list only contains two 'String's and
+-- returns the corresponding 'Difficulty' and 'Song', respectively.
 setModeAndSong :: [String]    -> IO (Maybe Difficulty, Maybe Song)
 setModeAndSong    (myMode : song : []) = do
     return $ (readMaybe myMode, lookup song songCollection)
